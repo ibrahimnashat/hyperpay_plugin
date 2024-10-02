@@ -134,7 +134,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
 do {
         try openUI()
     } catch {
-    result1('Error')
+    result1("Error")
 
     }
                         }
