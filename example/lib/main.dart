@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:hyperpay_imp/flutter_hyperpay.dart';
+import 'package:hyperpay_plugin/flutter_hyperpay.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as dev;
 
-import 'package:hyperpay_imp/model/custom_ui.dart';
-import 'package:hyperpay_imp/model/custom_ui_stc.dart';
-import 'package:hyperpay_imp/model/ready_ui.dart';
+import 'package:hyperpay_plugin/model/custom_ui.dart';
+import 'package:hyperpay_plugin/model/custom_ui_stc.dart';
+import 'package:hyperpay_plugin/model/ready_ui.dart';
 
 void main() {
   runApp(const MyApp());
