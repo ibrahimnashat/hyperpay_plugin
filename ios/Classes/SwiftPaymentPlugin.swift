@@ -132,7 +132,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
              self.checkoutProvider = OPPCheckoutProvider(paymentProvider: self.provider, checkoutID: checkoutId, settings: checkoutSettings)!
              self.checkoutProvider?.delegate = self
 do {
-        try openUI(result1)
+        try openUI(result1:result1)
     } catch {
     result1("Error")
 
