@@ -135,35 +135,40 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
           self.checkoutProvider?.presentCheckout(withPaymentBrand: self.brand,
                 loadingHandler:  { (inProgress) in
                 // Loading ...
-                }, completionHandler: { (transaction, error) in
-                    guard let transaction = transaction else {
-                        // Handle invalid transaction, check error
-                        print(error.debugDescription)
-                        return
-                    }
+                }, completionHandler: { ((transaction, error) in
+                      guard let transaction = transaction else {
+                          // Handle invalid transaction, check error
+                          // result1("error")
+                          result1(FlutterError.init(code: "1",message: "Error: " + self.transaction.debugDescription,details: nil))
+                          return
+                      }
+                      self.transaction = transaction
+                      if transaction.type == .synchronous {
+                          // If a transaction is synchronous, just request the payment status
+                          // You can use transaction.resourcePath or just checkout ID to do it
+                          DispatchQueue.main.async {
+                              result1("SYNC")
+                          }
+                      }
+                      else if transaction.type == .asynchronous {
+                          NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveAsynchronousPaymentCallback), name: Notification.Name(rawValue: "AsyncPaymentCompletedNotificationKey"), object: nil)
+                      }
+                      else {
+                          // result1("error")
+                          result1(FlutterError.init(code: "1",message:"Error : operation cancel",details: nil))
+                          // Executed in case of failure of the transaction for any reason
+                          print(self.transaction.debugDescription)
+                      }
+                  }
+                 , cancelHandler: {
+                 // result1("error")
+                  result1(FlutterError.init(code: "1",message: "Error : operation cancel",details: nil))
+                     // Executed if the shopper closes the payment page prematurely
+                     print(self.transaction.debugDescription)
+                 })
+                }
 
-                    self.transaction = transaction
-
-                    if transaction.type == .synchronous {
-                        // If a transaction is synchronous, just request the payment status
-                        // You can use transaction.resourcePath or just checkout ID to do it
-
-                        DispatchQueue.main.async {
-                            result1("SYNC")
-                        }
-                    } else if transaction.type == .asynchronous {
-                        NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveAsynchronousPaymentCallback), name: Notification.Name(rawValue: "AsyncPaymentCompletedNotificationKey"), object: nil)
-                    } else {
-                        // Executed in case of failure of the transaction for any reason
-                        print(self.transaction.debugDescription)
-                    }
-                }, cancelHandler: {
-                    // Executed if the shopper closes the payment page prematurely
-                    print(self.transaction.debugDescription)
-                })
-         }
-
-     }
+          }
 
 
     private func openCustomUI(checkoutId: String,result1: @escaping FlutterResult) {
