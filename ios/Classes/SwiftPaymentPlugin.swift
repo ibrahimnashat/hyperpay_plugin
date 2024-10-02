@@ -131,46 +131,46 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
              self.setThem(checkoutSettings: checkoutSettings, hexColorString: self.themColorHex)
              self.checkoutProvider = OPPCheckoutProvider(paymentProvider: self.provider, checkoutID: checkoutId, settings: checkoutSettings)!
              self.checkoutProvider?.delegate = self
-             self.checkoutProvider?.presentCheckout(withPaymentBrand: self.brand,
+do {
+        try openUI()
+    } catch {
+    result1('Error')
+
+    }
+                        }
+
+                    }
+
+
+private func openUI(){
+self.checkoutProvider?.presentCheckout(withPaymentBrand: self.brand,
                                                                     loadingHandler:  { (inProgress) in
                                                                     // Loading ...
                                                                     }, completionHandler: {
-
-                                                                    do {
-                                                                        // Code that can throw an error
-                                                                        try (transaction, error) in
-                                                                                                            guard let transaction = transaction else {
-                                                                                                                // Handle invalid transaction, check error
-                                                                                                                // result1("error")
-                                                                                                                result1(FlutterError.init(code: "1",message: "Error: " + self.transaction.debugDescription,details: nil))
-                                                                                                                return
-                                                                                                            }
-                                                                                                            self.transaction = transaction
-                                                                                                            if transaction.type == .synchronous {
-                                                                                                                // If a transaction is synchronous, just request the payment status
-                                                                                                                // You can use transaction.resourcePath or just checkout ID to do it
-                                                                                                                DispatchQueue.main.async {
-                                                                                                                    result1("SYNC")
-                                                                                                                }
-                                                                                                            }
-                                                                                                            else if transaction.type == .asynchronous {
-                                                                                                                NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveAsynchronousPaymentCallback), name: Notification.Name(rawValue: "AsyncPaymentCompletedNotificationKey"), object: nil)
-                                                                                                            }
-                                                                                                            else {
-                                                                                                                // result1("error")
-                                                                                                                result1(FlutterError.init(code: "1",message:"Error : operation cancel",details: nil))
-                                                                                                                // Executed in case of failure of the transaction for any reason
-                                                                                                                print(self.transaction.debugDescription)
-                                                                                                            }
-
-                                                                        print("Success")
-                                                                    } catch {
-                                                                        // Handle the error
-                                                                        print("Error occurred: \(error)")
-                                                                        result1("Error occurred: \(error)")
-                                                                        return
-                                                                    }
-
+                                (transaction, error) in
+                                guard let transaction = transaction else {
+                                    // Handle invalid transaction, check error
+                                    // result1("error")
+                                    result1(FlutterError.init(code: "1",message: "Error: " + self.transaction.debugDescription,details: nil))
+                                    return
+                                }
+                                self.transaction = transaction
+                                if transaction.type == .synchronous {
+                                    // If a transaction is synchronous, just request the payment status
+                                    // You can use transaction.resourcePath or just checkout ID to do it
+                                    DispatchQueue.main.async {
+                                        result1("SYNC")
+                                    }
+                                }
+                                else if transaction.type == .asynchronous {
+                                    NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveAsynchronousPaymentCallback), name: Notification.Name(rawValue: "AsyncPaymentCompletedNotificationKey"), object: nil)
+                                }
+                                else {
+                                    // result1("error")
+                                    result1(FlutterError.init(code: "1",message:"Error : operation cancel",details: nil))
+                                    // Executed in case of failure of the transaction for any reason
+                                    print(self.transaction.debugDescription)
+                                }
                             }
                                                                    , cancelHandler: {
                                                                    // result1("error")
@@ -178,12 +178,8 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                                                                        // Executed if the shopper closes the payment page prematurely
                                                                        print(self.transaction.debugDescription)
                                                                    })
-                        }
 
-                    }
-
-
-
+}
     private func openCustomUI(checkoutId: String,result1: @escaping FlutterResult) {
 
         if self.mode == "live" {
@@ -285,23 +281,18 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
            return handler
        }
 
-// Safely unwrap rootViewController in createalart
-func createalart(titletext: String, msgtext: String) {
-    DispatchQueue.main.async {
-        let alertController = UIAlertController(title: titletext, message: msgtext, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("ok", comment: ""), style: .default, handler: { (action) in
-            alertController.dismiss(animated: true, completion: nil)
-        }))
+       func createalart(titletext:String,msgtext:String){
+           DispatchQueue.main.async {
+               let alertController = UIAlertController(title: titletext, message:
+                                                       msgtext, preferredStyle: .alert)
+               alertController.addAction(UIAlertAction(title: NSLocalizedString("ok", comment: ""), style: .default,handler: {
+                   (action) in alertController.dismiss(animated: true, completion: nil)
+               }))
+               //  alertController.view.tintColor = UIColor.orange
+               UIApplication.shared.delegate?.window??.rootViewController?.present(alertController, animated: true, completion: nil)
+           }
 
-        if let rootVC = UIApplication.shared.delegate?.window??.rootViewController {
-            rootVC.present(alertController, animated: true, completion: nil)
-        } else {
-            print("rootViewController is nil")
-        }
-    }
-}
-
-
+       }
        func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
            controller.dismiss(animated: true, completion: nil)
        }
