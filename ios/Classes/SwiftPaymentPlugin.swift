@@ -57,10 +57,10 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
             self.lang=(args!["lang"] as? String)!
 
             if self.type == "ReadyUI" {
+                self.brand = (args!["brand"] as? String)!
                 self.applePaybundel=(args!["merchantId"] as? String)!
                 self.countryCode=(args!["CountryCode"] as? String)!
                 self.companyName=(args!["companyName"] as? String)!
-                self.brandsReadyUi = (args!["brand"]) as! [String]
                 self.themColorHex=(args!["themColorHexIOS"] as? String)!
 
                 self.setStorePaymentDetailsMode=(args!["setStorePaymentDetailsMode"] as? String )!
@@ -69,7 +69,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                 }
             } else if self.type  == "CustomUI"{
 
-                 self.brands = (args!["brand"] as? String)!
+                 self.brand = (args!["brand"] as? String)!
                  self.number = (args!["card_number"] as? String)!
                  self.holder = (args!["holder_name"] as? String)!
                  self.year = (args!["year"] as? String)!
@@ -99,8 +99,15 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
 
              let checkoutSettings = OPPCheckoutSettings()
              checkoutSettings.paymentBrands = self.brandsReadyUi;
-             if(self.brandsReadyUi.contains("APPLEPAY")){
-
+             if self.brand == "mada" {
+                 checkoutSettings.paymentBrands = ["MADA"]
+               } else if self.brand == "credit" {
+                 checkoutSettings.paymentBrands = ["VISA", "MASTER"]
+               } else if self.brand == "STC_PAY" {
+                 checkoutSettings.paymentBrands = ["STC_PAY"]
+               }  else if self.brand == "AMEX" {
+                 checkoutSettings.paymentBrands = ["AMEX"]
+               } else if self.brand == "APPLEPAY" {
                      let paymentRequest = OPPPaymentProvider.paymentRequest(withMerchantIdentifier: self.applePaybundel, countryCode: self.countryCode)
                      paymentRequest.paymentSummaryItems = [PKPaymentSummaryItem(label: self.companyName, amount: NSDecimalNumber(value: self.amount))]
 
@@ -113,6 +120,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                      }
                      checkoutSettings.applePayPaymentRequest = paymentRequest
                     // checkoutSettings.paymentBrands = ["APPLEPAY"]
+                 checkoutSettings.paymentBrands = ["APPLEPAY"]
              }
              checkoutSettings.language = self.lang
              // Set available payment brands for your shop

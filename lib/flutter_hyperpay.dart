@@ -32,7 +32,7 @@ class FlutterHyperPay {
   /// The function waits for the payment operation to complete and returns the resulting PaymentResultData.
   Future<PaymentResultData> readyUICards({required ReadyUI readyUI}) async {
     return await implementPayment(
-      brands: readyUI.brandsName,
+      brand: readyUI.brand,
       checkoutId: readyUI.checkoutId,
       shopperResultUrl: shopperResultUrl,
       channelName: channelName,

@@ -8,7 +8,7 @@ import '../helper/helper.dart';
 /// It returns a PaymentResultData object which is processed and managed by PaymentResultManger.
 /// If there is any error, it is caught and a PaymentResultData object with error string is returned.
 Future<PaymentResultData> implementPayment(
-    {required List<String> brands,
+    {required String brand,
     required String checkoutId,
     required String channelName,
     required String shopperResultUrl,
@@ -25,7 +25,7 @@ Future<PaymentResultData> implementPayment(
     final String? result = await platform.invokeMethod(
       PaymentConst.methodCall,
       getReadyModelCards(
-        brands: brands,
+        brand: brand,
         checkoutId: checkoutId,
         themColorHexIOS: themColorHexIOS,
         shopperResultUrl: shopperResultUrl,
@@ -52,7 +52,7 @@ Future<PaymentResultData> implementPayment(
 /// can also be provided. The function returns a Map with the corresponding values of type, mode,
 /// checkoutid, brand, lang, themColorHexIOS, ShopperResultUrl, and setStorePaymentDetailsMode.
 Map<String, dynamic> getReadyModelCards(
-    {required List<String> brands,
+    {required String brand,
     required String checkoutId,
     required String shopperResultUrl,
     required String lang,
@@ -66,7 +66,7 @@ Map<String, dynamic> getReadyModelCards(
     "type": PaymentConst.readyUi,
     "mode": paymentMode.toString().split('.').last,
     "checkoutid": checkoutId,
-    "brand": brands,
+    "brand": brand,
     "lang": lang,
     "merchantId": merchantId,
     "CountryCode": countryCode,
