@@ -135,30 +135,41 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                                                                     loadingHandler:  { (inProgress) in
                                                                     // Loading ...
                                                                     }, completionHandler: {
-                                (transaction, error) in
-                                guard let transaction = transaction else {
-                                    // Handle invalid transaction, check error
-                                    // result1("error")
-                                    result1(FlutterError.init(code: "1",message: "Error: " + self.transaction.debugDescription,details: nil))
-                                    return
-                                }
-                                self.transaction = transaction
-                                if transaction.type == .synchronous {
-                                    // If a transaction is synchronous, just request the payment status
-                                    // You can use transaction.resourcePath or just checkout ID to do it
-                                    DispatchQueue.main.async {
-                                        result1("SYNC")
-                                    }
-                                }
-                                else if transaction.type == .asynchronous {
-                                    NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveAsynchronousPaymentCallback), name: Notification.Name(rawValue: "AsyncPaymentCompletedNotificationKey"), object: nil)
-                                }
-                                else {
-                                    // result1("error")
-                                    result1(FlutterError.init(code: "1",message:"Error : operation cancel",details: nil))
-                                    // Executed in case of failure of the transaction for any reason
-                                    print(self.transaction.debugDescription)
-                                }
+
+                                                                    do {
+                                                                        // Code that can throw an error
+                                                                        try (transaction, error) in
+                                                                                                            guard let transaction = transaction else {
+                                                                                                                // Handle invalid transaction, check error
+                                                                                                                // result1("error")
+                                                                                                                result1(FlutterError.init(code: "1",message: "Error: " + self.transaction.debugDescription,details: nil))
+                                                                                                                return
+                                                                                                            }
+                                                                                                            self.transaction = transaction
+                                                                                                            if transaction.type == .synchronous {
+                                                                                                                // If a transaction is synchronous, just request the payment status
+                                                                                                                // You can use transaction.resourcePath or just checkout ID to do it
+                                                                                                                DispatchQueue.main.async {
+                                                                                                                    result1("SYNC")
+                                                                                                                }
+                                                                                                            }
+                                                                                                            else if transaction.type == .asynchronous {
+                                                                                                                NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveAsynchronousPaymentCallback), name: Notification.Name(rawValue: "AsyncPaymentCompletedNotificationKey"), object: nil)
+                                                                                                            }
+                                                                                                            else {
+                                                                                                                // result1("error")
+                                                                                                                result1(FlutterError.init(code: "1",message:"Error : operation cancel",details: nil))
+                                                                                                                // Executed in case of failure of the transaction for any reason
+                                                                                                                print(self.transaction.debugDescription)
+                                                                                                            }
+
+                                                                        print("Success")
+                                                                    } catch {
+                                                                                                                result1(FlutterError.init(code: "1",message: "Error: " + self.transaction.debugDescription,details: nil))
+                                                                                                                return
+                                                                        print("Error occurred: \(error)")
+                                                                    }
+
                             }
                                                                    , cancelHandler: {
                                                                    // result1("error")
