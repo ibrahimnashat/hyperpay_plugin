@@ -141,7 +141,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                                                 guard let transaction = transaction else {
                                                     // Handle invalid transaction, check error
                                                     // result1("error")
-                                                    result1(FlutterError.init(code: "1",message: "Error: " + self.transaction.debugDescription,details: nil))
+                                                    result1("Error: ")
                                                     return
                                                 }
                                                 self.transaction = transaction
@@ -153,25 +153,28 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                                                     }
                                                 }
                                                 else if transaction.type == .asynchronous {
-                                                    NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveAsynchronousPaymentCallback), name: Notification.Name(rawValue: "AsyncPaymentCompletedNotificationKey"), object: nil)
+                                                   do {
+                                                   try NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveAsynchronousPaymentCallback), name: Notification.Name(rawValue: "AsyncPaymentCompletedNotificationKey"), object: nil)
+                                                 }catch{
+                                                 }
                                                 }
                                                 else {
                                                     // result1("error")
-                                                    result1(FlutterError.init(code: "1",message:"Error : operation cancel",details: nil))
+                                                    result1("Error: ")
                                                     // Executed in case of failure of the transaction for any reason
-                                                    print(self.transaction.debugDescription)
+                                                    print("Error: ")
                                                 }
                                             }
                                                                                    , cancelHandler: {
                                                                                    // result1("error")
-                                                                                    result1(FlutterError.init(code: "1",message: "Error : operation cancel",details: nil))
+                                                                                    result1("Error: ")
                                                                                        // Executed if the shopper closes the payment page prematurely
-                                                                                       print(self.transaction.debugDescription)
+                                                                                       print("Error: ")
                                                                                    })
 
             }catch {
 
-            result1(FlutterError.init(code: "1",message: "Error: transaction ",details: nil))
+            result1("Error: ")
             return
             }
                         }
