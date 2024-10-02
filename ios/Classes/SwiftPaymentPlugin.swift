@@ -125,7 +125,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
              checkoutSettings.language = self.lang
              // Set available payment brands for your shop
              checkoutSettings.shopperResultURL = self.shopperResultURL+"://result"
-             if self.setStorePaymentDetailsMode=="true"{
+             if self.setStorePaymentDetailsMode == "true" {
                  checkoutSettings.storePaymentDetails = OPPCheckoutStorePaymentDetailsMode.prompt;
              }
              self.setThem(checkoutSettings: checkoutSettings, hexColorString: self.themColorHex)
@@ -236,7 +236,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
 
        @objc func didReceiveAsynchronousPaymentCallback(result: @escaping FlutterResult) {
            NotificationCenter.default.removeObserver(self, name: Notification.Name(rawValue: "AsyncPaymentCompletedNotificationKey"), object: nil)
-           if self.type == "ReadyUI" || self.type=="APPLEPAY"||self.type=="StoredCards"{
+           if self.type == "ReadyUI" || self.type == "APPLEPAY" || self.type == "StoredCards" {
                self.checkoutProvider?.dismissCheckout(animated: true) {
                    DispatchQueue.main.async {
                        result("success")
