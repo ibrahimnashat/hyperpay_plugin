@@ -217,7 +217,10 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                             self.safariVC = SFSafariViewController(url: self.transaction!.redirectURL!)
                             self.safariVC?.delegate = self;
                             //    self.present(self.safariVC!, animated: true, completion: nil)
-                            UIApplication.shared.windows.first?.rootViewController?.present(self.safariVC!, animated: true, completion: nil)
+                        if let safariVC = self.safariVC {
+                            UIApplication.shared.windows.first?.rootViewController?.present(safariVC, animated: true, completion: nil)
+                        }
+
                         }
                         else if transaction.type == .synchronous {
                             // Send request to your server to obtain transaction status
