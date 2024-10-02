@@ -241,25 +241,28 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
             }
     }
 
-       @objc func didReceiveAsynchronousPaymentCallback(result: @escaping FlutterResult) {
-           NotificationCenter.default.removeObserver(self, name: Notification.Name(rawValue: "AsyncPaymentCompletedNotificationKey"), object: nil)
-           if self.type == "ReadyUI" || self.type == "APPLEPAY" || self.type == "StoredCards" {
-               self.checkoutProvider?.dismissCheckout(animated: true) {
-                   DispatchQueue.main.async {
-                       result("success")
-                   }
-               }
-           }
+// Safely handle Presult in didReceiveAsynchronousPaymentCallback
+@objc func didReceiveAsynchronousPaymentCallback(result: @escaping FlutterResult) {
+    NotificationCenter.default.removeObserver(self, name: Notification.Name(rawValue: "AsyncPaymentCompletedNotificationKey"), object: nil)
+    if let result = self.Presult {
+        if self.type == "ReadyUI" || self.type == "APPLEPAY" || self.type == "StoredCards" {
+            self.checkoutProvider?.dismissCheckout(animated: true) {
+                DispatchQueue.main.async {
+                    result("success")
+                }
+            }
+        } else {
+            self.safariVC?.dismiss(animated: true) {
+                DispatchQueue.main.async {
+                    result("success")
+                }
+            }
+        }
+    } else {
+        print("Presult is nil")
+    }
+}
 
-           else {
-               self.safariVC?.dismiss(animated: true) {
-                   DispatchQueue.main.async {
-                       result("success")
-                   }
-               }
-           }
-
-       }
      public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
            var handler:Bool = false
            if url.scheme?.caseInsensitiveCompare( self.shopperResultURL) == .orderedSame {
@@ -270,18 +273,23 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
            return handler
        }
 
-       func createalart(titletext:String,msgtext:String){
-           DispatchQueue.main.async {
-               let alertController = UIAlertController(title: titletext, message:
-                                                       msgtext, preferredStyle: .alert)
-               alertController.addAction(UIAlertAction(title: NSLocalizedString("ok", comment: ""), style: .default,handler: {
-                   (action) in alertController.dismiss(animated: true, completion: nil)
-               }))
-               //  alertController.view.tintColor = UIColor.orange
-               UIApplication.shared.delegate?.window??.rootViewController?.present(alertController, animated: true, completion: nil)
-           }
+// Safely unwrap rootViewController in createalart
+func createalart(titletext: String, msgtext: String) {
+    DispatchQueue.main.async {
+        let alertController = UIAlertController(title: titletext, message: msgtext, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("ok", comment: ""), style: .default, handler: { (action) in
+            alertController.dismiss(animated: true, completion: nil)
+        }))
 
-       }
+        if let rootVC = UIApplication.shared.delegate?.window??.rootViewController {
+            rootVC.present(alertController, animated: true, completion: nil)
+        } else {
+            print("rootViewController is nil")
+        }
+    }
+}
+
+
        func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
            controller.dismiss(animated: true, completion: nil)
        }
