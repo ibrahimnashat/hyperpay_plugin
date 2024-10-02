@@ -165,9 +165,10 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
 
                                                                         print("Success")
                                                                     } catch {
-                                                                                                                result1(FlutterError.init(code: "1",message: "Error: " + self.transaction.debugDescription,details: nil))
-                                                                                                                return
+                                                                        // Handle the error
                                                                         print("Error occurred: \(error)")
+                                                                        result1("Error occurred: \(error)")
+                                                                        return
                                                                     }
 
                             }
