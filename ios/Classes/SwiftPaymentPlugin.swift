@@ -132,7 +132,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
              self.checkoutProvider = OPPCheckoutProvider(paymentProvider: self.provider, checkoutID: checkoutId, settings: checkoutSettings)!
              self.checkoutProvider?.delegate = self
 do {
-        try openUI()
+        try openUI(result1)
     } catch {
     result1("Error")
 
@@ -142,7 +142,7 @@ do {
                     }
 
 
-private func openUI(){
+private func openUI(result1: @escaping FlutterResult){
 self.checkoutProvider?.presentCheckout(withPaymentBrand: self.brand,
                                                                     loadingHandler:  { (inProgress) in
                                                                     // Loading ...
