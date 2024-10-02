@@ -131,7 +131,10 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
              self.setThem(checkoutSettings: checkoutSettings, hexColorString: self.themColorHex)
              self.checkoutProvider = OPPCheckoutProvider(paymentProvider: self.provider, checkoutID: checkoutId, settings: checkoutSettings)!
              self.checkoutProvider?.delegate = self
-             self.checkoutProvider?.presentCheckout(withPaymentBrand: self.brand, forSubmittingTransactionCompletionHandler: {
+             self.checkoutProvider?.presentCheckout(withPaymentBrand: self.brand,
+                                                                    loadingHandler:  { (inProgress) in
+                                                                    // Loading ...
+                                                                    }, completionHandler: {
                                 (transaction, error) in
                                 guard let transaction = transaction else {
                                     // Handle invalid transaction, check error
