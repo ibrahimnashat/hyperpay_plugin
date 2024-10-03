@@ -145,6 +145,8 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                                 self.transaction = transaction
                                 DispatchQueue.main.async {
                                     result1(self.transaction!.redirectURL!.absoluteString)
+                                    // Stopping further execution
+                                    self.checkoutProvider?.dismissCheckout(animated: true, completion: nil)
                                     return
                                 }
 //                                 if transaction.type == .synchronous {
