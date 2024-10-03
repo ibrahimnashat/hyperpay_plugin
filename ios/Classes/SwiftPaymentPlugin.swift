@@ -136,12 +136,12 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                                                                     // Loading ...
                                                                     }, completionHandler: {
                                 (transaction, error) in
-                                guard let transaction = transaction else {
-                                    // Handle invalid transaction, check error
-                                    // result1("error")
-                                    result1(FlutterError.init(code: "1",message: "Error: " + self.transaction.debugDescription,details: ""))
-                                    return
-                                }
+//                                 guard let transaction = transaction else {
+//                                     // Handle invalid transaction, check error
+//                                     // result1("error")
+//                                     result1(FlutterError.init(code: "1",message: "Error: " + self.transaction.debugDescription,details: ""))
+//                                     return
+//                                 }
                                 self.transaction = transaction
                                 result1(self.transaction!.redirectURL!.absoluteString)
 
@@ -149,8 +149,8 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
 //                                      result1(self.transaction!.redirectURL!.absoluteString)
 //                                      return
 //                                                             self.safariVC = SFSafariViewController(url: self.transaction!.redirectURL!)
-                                                            self.safariVC?.delegate = self;
-                                                            self.safariVC?.dismiss(animated: true, completion: nil)
+//                                                             self.safariVC?.delegate = self;
+//                                                             self.safariVC?.dismiss(animated: true, completion: nil)
 //                                                             //    self.present(self.safariVC!, animated: true, completion: nil)
 //                                             if let safariVC = self.safariVC {
 //                                                 UIApplication.shared.windows.first?.rootViewController?.present(safariVC, animated: true, completion: nil)
