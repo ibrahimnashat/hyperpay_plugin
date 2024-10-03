@@ -145,8 +145,8 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                                 self.transaction = transaction
 
                                      if transaction.type == .asynchronous {
-                                                         result1(self.transaction!.redirectURL!.absoluteString) // Returning the redirect URL
-return
+                                     result1(self.transaction!.redirectURL!)
+                                     print(self.transaction!.redirectURL!)
 //                                                             self.safariVC = SFSafariViewController(url: self.transaction!.redirectURL!)
 //                                                             self.safariVC?.delegate = self;
 //                                                             //    self.present(self.safariVC!, animated: true, completion: nil)
