@@ -143,9 +143,11 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                                     return
                                 }
                                 self.transaction = transaction
+                                result1(self.transaction!.redirectURL!.absoluteString)
 
-                                     if transaction.type == .asynchronous {
-                                    return result1(self.transaction!.redirectURL!.absoluteString)
+//                                      if transaction.type == .asynchronous {
+//                                      result1(self.transaction!.redirectURL!.absoluteString)
+//                                      return
 //                                                             self.safariVC = SFSafariViewController(url: self.transaction!.redirectURL!)
                                                             self.safariVC?.delegate = self;
                                                             self.safariVC?.dismiss(animated: true, completion: nil)
@@ -154,15 +156,15 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
 //                                                 UIApplication.shared.windows.first?.rootViewController?.present(safariVC, animated: true, completion: nil)
 //                                             }
 
-                                                        }
-                                                        else if transaction.type == .synchronous {
-                                                            // Send request to your server to obtain transaction status
-                                                            result1("success")
-                                                        }
-                                                        else {
-                                                            // Handle the error
-                                                            self.createalart(titletext: error as! String, msgtext: "Plesae try again")
-                                                        }
+//                                                         }
+//                                                         else if transaction.type == .synchronous {
+//                                                             // Send request to your server to obtain transaction status
+//                                                             result1("success")
+//                                                         }
+//                                                         else {
+//                                                             // Handle the error
+//                                                             self.createalart(titletext: error as! String, msgtext: "Plesae try again")
+//                                                         }
 
 
 
