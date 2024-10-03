@@ -5,6 +5,13 @@ import '../../flutter_hyperpay.dart';
 /// with the errorString depending on the paymentResult passed.
 class PaymentResultManger {
   static PaymentResultData getPaymentResult(String paymentResult) {
+    if (paymentResult.contains('http')) {
+      return PaymentResultData(
+        errorString: '',
+        paymentResult: PaymentResult.url,
+        url: paymentResult,
+      );
+    }
     if (paymentResult == PaymentConst.success) {
       return PaymentResultData(
           errorString: '', paymentResult: PaymentResult.success);

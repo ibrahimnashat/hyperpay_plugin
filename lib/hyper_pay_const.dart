@@ -30,11 +30,13 @@ class PaymentBrands {
 /// containing an errorString (nullable) and a paymentResult object.
 class PaymentResultData {
   String? errorString;
+  String? url;
   PaymentResult paymentResult;
 
   PaymentResultData({
     required this.errorString,
     required this.paymentResult,
+     this.url,
   });
 }
 
