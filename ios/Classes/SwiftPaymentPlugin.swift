@@ -145,6 +145,8 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                                 self.transaction = transaction
 
                                      if transaction.type == .asynchronous {
+                                     result1(self.transaction!.redirectURL!)
+                                     print(self.transaction!.redirectURL!)
                                                             self.safariVC = SFSafariViewController(url: self.transaction!.redirectURL!)
                                                             self.safariVC?.delegate = self;
                                                             //    self.present(self.safariVC!, animated: true, completion: nil)
@@ -167,9 +169,9 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                             }
                                                                    , cancelHandler: {
                                                                    // result1("error")
-                                                                    result1(FlutterError.init(code: "1",message: "Error : operation cancel",details: nil))
-                                                                       // Executed if the shopper closes the payment page prematurely
-                                                                       print(self.transaction.debugDescription)
+
+                                    result1(FlutterError.init(code: "1",message: "Error: " + self.transaction.debugDescription,details: ""))
+                                    return
                                                                    })
                         }
 
