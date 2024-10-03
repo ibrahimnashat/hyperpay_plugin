@@ -136,44 +136,39 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                                                                     // Loading ...
                                                                     }, completionHandler: {
                                 (transaction, error) in
-//                                 guard let transaction = transaction else {
-//                                     // Handle invalid transaction, check error
-//                                     // result1("error")
-//                                     result1(FlutterError.init(code: "1",message: "Error: " + self.transaction.debugDescription,details: ""))
-//                                     return
-//                                 }
+                                guard let transaction = transaction else {
+                                    // Handle invalid transaction, check error
+                                    // result1("error")
+                                    result1(FlutterError.init(code: "1",message: "Error: " + self.transaction.debugDescription,details: nil))
+                                    return
+                                }
                                 self.transaction = transaction
-                                result1(self.transaction!.redirectURL!.absoluteString)
-
-//                                      if transaction.type == .asynchronous {
-//                                      result1(self.transaction!.redirectURL!.absoluteString)
-//                                      return
-//                                                             self.safariVC = SFSafariViewController(url: self.transaction!.redirectURL!)
-//                                                             self.safariVC?.delegate = self;
-//                                                             self.safariVC?.dismiss(animated: true, completion: nil)
-//                                                             //    self.present(self.safariVC!, animated: true, completion: nil)
-//                                             if let safariVC = self.safariVC {
-//                                                 UIApplication.shared.windows.first?.rootViewController?.present(safariVC, animated: true, completion: nil)
-//                                             }
-
-//                                                         }
-//                                                         else if transaction.type == .synchronous {
-//                                                             // Send request to your server to obtain transaction status
-//                                                             result1("success")
-//                                                         }
-//                                                         else {
-//                                                             // Handle the error
-//                                                             self.createalart(titletext: error as! String, msgtext: "Plesae try again")
-//                                                         }
-
-
-
+                                DispatchQueue.main.async {
+                                    result1(self.transaction!.redirectURL!.absoluteString)
+                                    return
+                                }
+//                                 if transaction.type == .synchronous {
+//                                     // If a transaction is synchronous, just request the payment status
+//                                     // You can use transaction.resourcePath or just checkout ID to do it
+//                                     DispatchQueue.main.async {
+//                                         result1("SYNC")
+//                                     }
+//                                 }
+//                                 else if transaction.type == .asynchronous {
+//                                     NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveAsynchronousPaymentCallback), name: Notification.Name(rawValue: "AsyncPaymentCompletedNotificationKey"), object: nil)
+//                                 }
+//                                 else {
+//                                     // result1("error")
+//                                     result1(FlutterError.init(code: "1",message:"Error : operation cancel",details: nil))
+//                                     // Executed in case of failure of the transaction for any reason
+//                                     print(self.transaction.debugDescription)
+//                                 }
                             }
                                                                    , cancelHandler: {
                                                                    // result1("error")
-
-                                    result1(FlutterError.init(code: "1",message: "Error: " + self.transaction.debugDescription,details: ""))
-                                    return
+                                                                    result1(FlutterError.init(code: "1",message: "Error : operation cancel",details: nil))
+                                                                       // Executed if the shopper closes the payment page prematurely
+                                                                       print(self.transaction.debugDescription)
                                                                    })
                         }
 
@@ -226,9 +221,9 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                             self.safariVC = SFSafariViewController(url: self.transaction!.redirectURL!)
                             self.safariVC?.delegate = self;
                             //    self.present(self.safariVC!, animated: true, completion: nil)
-            if let safariVC = self.safariVC {
-                UIApplication.shared.windows.first?.rootViewController?.present(safariVC, animated: true, completion: nil)
-            }
+                        if let safariVC = self.safariVC {
+                            UIApplication.shared.windows.first?.rootViewController?.present(safariVC, animated: true, completion: nil)
+                        }
 
                         }
                         else if transaction.type == .synchronous {
