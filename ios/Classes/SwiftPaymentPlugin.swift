@@ -143,7 +143,8 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                                     return
                                 }
                                 self.transaction = transaction
-                                if transaction.type == .asynchronous {
+
+                                     if transaction.type == .asynchronous {
                                                             self.safariVC = SFSafariViewController(url: self.transaction!.redirectURL!)
                                                             self.safariVC?.delegate = self;
                                                             //    self.present(self.safariVC!, animated: true, completion: nil)
@@ -159,8 +160,10 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                                                         else {
                                                             // Handle the error
                                                             self.createalart(titletext: error as! String, msgtext: "Plesae try again")
-                                       }
-                                 }
+                                                        }
+
+
+
                             }
                                                                    , cancelHandler: {
                                                                    // result1("error")
