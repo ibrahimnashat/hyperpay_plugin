@@ -165,9 +165,6 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                                     }
                                     else {
                                          result1("error")
-//                                        result1(FlutterError.init(code: "1",message:"Error : operation cancel",details: nil))
-                                        // Executed in case of failure of the transaction for any reason
-                                        print(self.transaction.debugDescription)
                                     }
 
                                 }
@@ -175,10 +172,18 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
 
                             }
                                                                    , cancelHandler: {
-                                                                    result1("error")
-//                                                                    result1(FlutterError.init(code: "1",message: "Error : operation cancel",details: nil))
-                                                                       // Executed if the shopper closes the payment page prematurely
-                                                                       print(self.transaction.debugDescription)
+                                                                        if self.brand == "ReadyUI" || self.brand == "APPLEPAY" || self.brand == "StoredCards" {
+                                                                                      self.checkoutProvider?.dismissCheckout(animated: true) {
+
+                                                                                              result1("success")
+                                                                                      }
+                                                                                  }
+                                                                                  else {
+                                                                                      self.safariVC?.dismiss(animated: true) {
+
+                                                                                              result1("success")
+                                                                                      }
+                                                                                  }
                                                                    })
                         }
 
@@ -264,7 +269,6 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                    }
                }
            }
-
            else {
                self.safariVC?.dismiss(animated: true) {
                    DispatchQueue.main.async {
