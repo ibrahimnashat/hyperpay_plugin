@@ -144,14 +144,14 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                                 }
                                 self.transaction = transaction
 
-                                if (checkoutSettings.paymentBrands == ["STC_PAY"]) {
+                                if checkoutSettings.paymentBrands == ["STC_PAY"] {
                                   DispatchQueue.main.async {
                                                                     result1(self.transaction!.redirectURL!.absoluteString)
                                                                     // Stopping further execution
                                                                     self.checkoutProvider?.dismissCheckout(animated: true, completion: nil)
                                                                     return
                                                                 }
-                                }else {
+                                } else {
                                 if transaction.type == .synchronous {
                                         // If a transaction is synchronous, just request the payment status
                                         // You can use transaction.resourcePath or just checkout ID to do it
@@ -171,7 +171,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
 
                                 }
 
-//
+
                             }
                                                                    , cancelHandler: {
                                                                    // result1("error")
