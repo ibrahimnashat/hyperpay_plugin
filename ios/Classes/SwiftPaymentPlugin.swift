@@ -147,7 +147,11 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                                 if self.brand == "STC_PAY" {
                                    // Stopping further execution
                                    self.checkoutProvider?.dismissCheckout(animated: true)
-                                   result1(self.transaction!.redirectURL!.absoluteString)
+                                   if let redirectURL = self.transaction?.redirectURL {
+                                       result1(redirectURL.absoluteString)
+                                   } else {
+                                       result1("error")
+                                   }
                                 } else {
                                 if transaction.type == .synchronous {
                                         // If a transaction is synchronous, just request the payment status
