@@ -143,28 +143,35 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                                     return
                                 }
                                 self.transaction = transaction
-                                DispatchQueue.main.async {
-                                    result1(self.transaction!.redirectURL!.absoluteString)
-                                    // Stopping further execution
-                                    self.checkoutProvider?.dismissCheckout(animated: true, completion: nil)
-                                    return
+
+                                if (checkoutSettings.paymentBrands == ["STC_PAY"]) {
+                                  DispatchQueue.main.async {
+                                                                    result1(self.transaction!.redirectURL!.absoluteString)
+                                                                    // Stopping further execution
+                                                                    self.checkoutProvider?.dismissCheckout(animated: true, completion: nil)
+                                                                    return
+                                                                }
+                                }else {
+                                if transaction.type == .synchronous {
+                                        // If a transaction is synchronous, just request the payment status
+                                        // You can use transaction.resourcePath or just checkout ID to do it
+                                        DispatchQueue.main.async {
+                                            result1("SYNC")
+                                        }
+                                    }
+                                    else if transaction.type == .asynchronous {
+                                        NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveAsynchronousPaymentCallback), name: Notification.Name(rawValue: "AsyncPaymentCompletedNotificationKey"), object: nil)
+                                    }
+                                    else {
+                                        // result1("error")
+                                        result1(FlutterError.init(code: "1",message:"Error : operation cancel",details: nil))
+                                        // Executed in case of failure of the transaction for any reason
+                                        print(self.transaction.debugDescription)
+                                    }
+
                                 }
-//                                 if transaction.type == .synchronous {
-//                                     // If a transaction is synchronous, just request the payment status
-//                                     // You can use transaction.resourcePath or just checkout ID to do it
-//                                     DispatchQueue.main.async {
-//                                         result1("SYNC")
-//                                     }
-//                                 }
-//                                 else if transaction.type == .asynchronous {
-//                                     NotificationCenter.default.addObserver(self, selector: #selector(self.didReceiveAsynchronousPaymentCallback), name: Notification.Name(rawValue: "AsyncPaymentCompletedNotificationKey"), object: nil)
-//                                 }
-//                                 else {
-//                                     // result1("error")
-//                                     result1(FlutterError.init(code: "1",message:"Error : operation cancel",details: nil))
-//                                     // Executed in case of failure of the transaction for any reason
-//                                     print(self.transaction.debugDescription)
-//                                 }
+
+//
                             }
                                                                    , cancelHandler: {
                                                                    // result1("error")
