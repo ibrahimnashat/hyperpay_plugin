@@ -97,37 +97,43 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
         }
         // Configure the STC Pay payment parameters
         self.brand = "STC_PAY"
-        let paymentParams = try OPPCardPaymentParams(checkoutID: checkoutId, paymentBrand: self.brand)
 
-        // Validate the payment parameters
-        do {
-            let transaction = try OPPTransaction(paymentParams: paymentParams)
-            self.provider.submitTransaction(transaction) { (transaction, error) in
-                guard let transaction = transaction else {
-                    // Handle invalid transaction, check error
-                    self.createalart(titletext: error as! String, msgtext: error as! String)
-                    return
-                }
-                if transaction.type == .asynchronous {
-                    // Generate the STC Pay URL
-                    if let paymentURL = transaction.redirectURL {
-                        result1(paymentURL)
-                    } else {
-                        result1(FlutterError(code: "1", message: "Method name is not found", details: ""))
+          do {
+        let paymentParams = try OPPCardPaymentParams(checkoutID: checkoutId, paymentBrand: self.brand)
+                    var isEnabledTokenization:Bool = false;
+                    if(self.setStorePaymentDetailsMode=="true"){
+                        isEnabledTokenization=true;
                     }
-                } else if transaction.type == .synchronous {
-                    if let paymentURL = transaction.redirectURL {
-                        result1(paymentURL)
-                    } else {
-                        result1(FlutterError(code: "1", message: "Method name is not found", details: ""))
+                    paymentParams.isTokenizationEnabled=isEnabledTokenization;
+                    //set tokenization
+                    paymentParams.shopperResultURL =  self.shopperResultURL+"://result"
+                    self.transaction  = OPPTransaction(paymentParams: paymentParams)
+                    self.provider.submitTransaction(self.transaction!) { (transaction, error) in
+                        guard let transaction = transaction else {
+                            // Handle invalid transaction, check error
+                            self.createalart(titletext: error as! String, msgtext: error as! String)
+                            return
+                        }
+                        if transaction.type == .asynchronous {
+                            if let redirectURL = self.transaction?.redirectURL {
+                                       result1(redirectURL.absoluteString)
+                                   } else {
+                                       result1("error")
+                                   }
+
+                        }
+                        else if transaction.type == .synchronous {
+                            // Send request to your server to obtain transaction status
+                            result1("success")
+                        }
+                        else {
+                            // Handle the error
+                            self.createalart(titletext: error as! String, msgtext: "Plesae try again")
+                        }
                     }
-                } else {
-                    result1(FlutterError(code: "1", message: "Please try again", details: ""))
+                    // Set shopper result URL
+                    //    params.shopperResultURL = "com.companyname.appname.payments://result"
                 }
-            }
-        } catch let error {
-            result1(FlutterError(code: "1", message: "Error creating transaction: \(error)", details: ""))
-        }
     }
 
 
