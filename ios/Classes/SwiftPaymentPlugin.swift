@@ -78,7 +78,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                  self.setStorePaymentDetailsMode = (args!["EnabledTokenization"] as? String)!
                  self.openCustomUI(checkoutId: self.checkoutid, result1: result)
             } else if self.type  == "STC_CustomUI"{
-                 self.retrieveSTCPayURL(checkoutId: self.checkoutid, result1: result)
+                 self.retrieveSTCPayURL(checkoutId: self.checkoutid, phoneNumber: (args!["phoneNumber"] as? String)!, result1: result)
             }
             else {
                 result(FlutterError(code: "1", message: "Method name is not found", details: ""))
@@ -89,7 +89,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
             }
         }
 
-    private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResult) {
+    private func retrieveSTCPayURL(checkoutId: String, phoneNumber: String, result1: @escaping FlutterResult) {
          if self.mode == "live" {
             self.provider = OPPPaymentProvider(mode: OPPProviderMode.live)
         }else{
@@ -99,7 +99,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
         self.brand = "STC_PAY"
 
           do {
-        let paymentParams = try OPPCardPaymentParams(checkoutID: checkoutId, paymentBrand: self.brand)
+        let paymentParams = try OPPSTCPayPaymentParams(checkoutID: checkoutId, paymentBrand: self.brand, phoneNumber: phoneNumber)
                     var isEnabledTokenization:Bool = false;
                     if(self.setStorePaymentDetailsMode=="true"){
                         isEnabledTokenization=true;

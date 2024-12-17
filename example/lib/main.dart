@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'dart:developer' as dev;
 
 import 'package:hyperpay_plugin/model/custom_ui.dart';
+import 'package:hyperpay_plugin/model/custom_ui_stc.dart';
 import 'package:hyperpay_plugin/model/ready_ui.dart';
 
 void main() {
@@ -195,12 +196,17 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  payRequestNowCustomUiSTCPAY(
-      {required String phoneNumber, required String checkoutId}) async {
+  payRequestNowCustomUiSTCPAY({
+    required String phoneNumber,
+    required String checkoutId,
+  }) async {
     PaymentResultData paymentResultData;
 
     paymentResultData = await flutterHyperPay.customUISTC(
-      checkoutId: checkoutId,
+      customUISTC: CustomUISTC(
+        checkoutId: checkoutId,
+        phoneNumber: phoneNumber,
+      ),
     );
 
     if (paymentResultData.paymentResult == PaymentResult.success ||

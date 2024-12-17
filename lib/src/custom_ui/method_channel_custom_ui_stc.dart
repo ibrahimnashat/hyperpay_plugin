@@ -12,6 +12,7 @@ Future<PaymentResultData> implementPaymentCustomUISTC({
   required String channelName,
   required String shopperResultUrl,
   required String lang,
+  required String phoneNumber,
 }) async {
   String transactionStatus;
   var platform = MethodChannel(channelName);
@@ -19,10 +20,12 @@ Future<PaymentResultData> implementPaymentCustomUISTC({
     final String? result = await platform.invokeMethod(
       PaymentConst.methodCall,
       getCustomUiSTCModelCards(
-          checkoutId: checkoutId,
-          shopperResultUrl: shopperResultUrl,
-          paymentMode: paymentMode,
-          lang: lang),
+        checkoutId: checkoutId,
+        shopperResultUrl: shopperResultUrl,
+        paymentMode: paymentMode,
+        phoneNumber: phoneNumber,
+        lang: lang,
+      ),
     );
     transactionStatus = '$result';
     return PaymentResultManger.getPaymentResult(transactionStatus);
@@ -42,6 +45,7 @@ Map<String, String?> getCustomUiSTCModelCards({
   required String checkoutId,
   required String lang,
   required String shopperResultUrl,
+  required String phoneNumber,
 }) {
   return {
     "type": PaymentConst.customUiSTC,
@@ -49,5 +53,6 @@ Map<String, String?> getCustomUiSTCModelCards({
     "checkoutid": checkoutId,
     "lang": lang,
     "ShopperResultUrl": shopperResultUrl,
+    "phoneNumber": phoneNumber,
   };
 }
