@@ -91,21 +91,21 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
 
     private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResult) {
         // Configure the STC Pay payment parameters
-        let paymentParams = OPPPaymentParams(paymentBrand: "STC_PAY", checkoutID: checkoutId)
-        
+        let paymentParams = OPPCardPaymentParams(paymentBrand: "STC_PAY", checkoutID: checkoutId)
+
         // Validate the payment parameters
         do {
             let transaction = try OPPTransaction(paymentParams: paymentParams)
             
             // Generate the STC Pay URL
             if let paymentURL = transaction.redirectURL {
-                result1(.success(paymentURL))
+                result1(paymentURL)
             } else {
                 let error = NSError(domain: "PaymentHandler", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve the STC Pay URL."])
-                result1(.failure(error))
+                result1(error)
             }
         } catch let error {
-            result1(.failure(error))
+            result1(error)
         }
     }
 
