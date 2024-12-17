@@ -29,7 +29,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
     var themColorHex:String = "";
     var companyName:String = "";
     var safariVC: SFSafariViewController?
-    var transaction: OPPTransaction?
+    var transaction: OPPTransaction!
     var provider = OPPPaymentProvider(mode: OPPProviderMode.test)
     var checkoutProvider: OPPCheckoutProvider?
     var Presult:FlutterResult?
@@ -122,12 +122,7 @@ private func retrieveSTCPayURL(checkoutId: String, phoneNumber: String, result1:
             if transaction.type == .asynchronous {
                 // Open the STC Pay redirect URL in Safari View Controller
                 if let redirectURL = transaction.redirectURL {
-                    self.safariVC = SFSafariViewController(url: redirectURL)
-                    self.safariVC?.delegate = self
-
-                    if let safariVC = self.safariVC {
-                        UIApplication.shared.windows.first?.rootViewController?.present(safariVC, animated: true, completion: nil)
-                    }
+                    result1(redirectURL.absoluteString)
                 } else {
                     result1(FlutterError(code: "2", message: "Redirect URL not found", details: nil))
                 }
