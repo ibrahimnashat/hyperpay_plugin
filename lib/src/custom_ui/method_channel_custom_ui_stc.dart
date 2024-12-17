@@ -11,7 +11,6 @@ Future<PaymentResultData> implementPaymentCustomUISTC({
   required String checkoutId,
   required String channelName,
   required String shopperResultUrl,
-  required String phoneNumber,
   required String lang,
 }) async {
   String transactionStatus;
@@ -23,7 +22,6 @@ Future<PaymentResultData> implementPaymentCustomUISTC({
           checkoutId: checkoutId,
           shopperResultUrl: shopperResultUrl,
           paymentMode: paymentMode,
-          phoneNumber: phoneNumber,
           lang: lang),
     );
     transactionStatus = '$result';
@@ -41,7 +39,6 @@ Future<PaymentResultData> implementPaymentCustomUISTC({
 /// mode, checkout id, phone number, language, and shopper result URL.
 Map<String, String?> getCustomUiSTCModelCards({
   required PaymentMode paymentMode,
-  required String phoneNumber,
   required String checkoutId,
   required String lang,
   required String shopperResultUrl,
@@ -50,7 +47,6 @@ Map<String, String?> getCustomUiSTCModelCards({
     "type": PaymentConst.customUiSTC,
     "mode": paymentMode.toString().split('.').last,
     "checkoutid": checkoutId,
-    "phone_number": phoneNumber,
     "lang": lang,
     "ShopperResultUrl": shopperResultUrl,
   };

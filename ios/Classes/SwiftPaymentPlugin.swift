@@ -77,6 +77,8 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                  self.cvv = (args!["cvv"] as? String)!
                  self.setStorePaymentDetailsMode = (args!["EnabledTokenization"] as? String)!
                  self.openCustomUI(checkoutId: self.checkoutid, result1: result)
+            } else if self.type  == "STC_CustomUI"{
+                 self.retrieveSTCPayURL(checkoutId: self.checkoutid, result1: result)
             }
             else {
                 result(FlutterError(code: "1", message: "Method name is not found", details: ""))
@@ -86,6 +88,26 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                 result(FlutterError(code: "1", message: "Method name is not found", details: ""))
             }
         }
+
+    private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResult) {
+        // Configure the STC Pay payment parameters
+        let paymentParams = OPPPaymentParams(paymentBrand: "STC_PAY", checkoutID: checkoutId)
+        
+        // Validate the payment parameters
+        do {
+            let transaction = try OPPTransaction(paymentParams: paymentParams)
+            
+            // Generate the STC Pay URL
+            if let paymentURL = transaction.redirectURL {
+                result1(.success(paymentURL))
+            } else {
+                let error = NSError(domain: "PaymentHandler", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve the STC Pay URL."])
+                result1(.failure(error))
+            }
+        } catch let error {
+            result1(.failure(error))
+        }
+    }
 
 
     private func openCheckoutUI(checkoutId: String,result1: @escaping FlutterResult) {

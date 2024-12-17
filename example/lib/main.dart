@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http;
 import 'dart:developer' as dev;
 
 import 'package:hyperpay_plugin/model/custom_ui.dart';
-import 'package:hyperpay_plugin/model/custom_ui_stc.dart';
 import 'package:hyperpay_plugin/model/ready_ui.dart';
 
 void main() {
@@ -69,14 +68,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   String? checkoutId = await getCheckOut();
                   if (checkoutId != null) {
                     /// Brands Names [ VISA , MASTER , MADA , STC_PAY , APPLEPAY]
-                    payRequestNowReadyUI(brand: [
-                      "VISA",
-                      "MASTER",
-                      "MADA",
-                      "PAYPAL",
-                      "STC_PAY",
-                      "APPLEPAY"
-                    ].first, checkoutId: checkoutId);
+                    payRequestNowReadyUI(
+                        brand: [
+                          "VISA",
+                          "MASTER",
+                          "MADA",
+                          "PAYPAL",
+                          "STC_PAY",
+                          "APPLEPAY"
+                        ].first,
+                        checkoutId: checkoutId);
                   }
                 },
                 child: const Text(
@@ -199,8 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
     PaymentResultData paymentResultData;
 
     paymentResultData = await flutterHyperPay.customUISTC(
-      customUISTC:
-          CustomUISTC(checkoutId: checkoutId, phoneNumber: phoneNumber),
+      checkoutId: checkoutId,
     );
 
     if (paymentResultData.paymentResult == PaymentResult.success ||
