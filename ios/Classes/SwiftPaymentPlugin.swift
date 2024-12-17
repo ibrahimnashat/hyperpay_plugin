@@ -91,7 +91,8 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
 
     private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResult) {
         // Configure the STC Pay payment parameters
-        let paymentParams = OPPCardPaymentParams(paymentBrand: "STC_PAY", checkoutID: checkoutId)
+        self.brand = "STC_PAY"
+        let paymentParams = try OPPCardPaymentParams(checkoutID: checkoutId, paymentBrand: self.brand)
 
         // Validate the payment parameters
         do {
