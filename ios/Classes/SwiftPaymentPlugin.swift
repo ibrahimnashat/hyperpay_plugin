@@ -90,8 +90,12 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
         }
 
    private func retrieveSTCPayURL(checkoutId: String, phoneNumber: String, result1: @escaping FlutterResult) {
-    let providerMode: OPPProviderMode = (self.mode == "live") ? .live : .test
-    self.provider = OPPPaymentProvider(mode: providerMode)
+    
+         if self.mode == "live" {
+             self.provider = OPPPaymentProvider(mode: OPPProviderMode.live)
+         }else{
+             self.provider = OPPPaymentProvider(mode: OPPProviderMode.test)
+         }
 
     do {
         // Ensure to pass the correct raw value for the parameters
@@ -101,38 +105,26 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
         let verificationOption = OPPSTCPayVerificationOption(rawValue: "OTPEnabled") // Make sure this matches the enum raw value
         verificationOption.isOTPEnabled = true // Enable OTP (One Time Password) verification
         params.verificationOption = verificationOption
-        
+        params.isTokenizationEnabled=false;
         params.shopperResultURL = self.shopperResultURL + "://result"
         
         self.transaction = OPPTransaction(paymentParams: params)
 
         self.provider.submitTransaction(self.transaction!) { (transaction, error) in
-            if let error = error {
-                // Handle invalid transaction
-                result1(FlutterError(code: "1", message: error.localizedDescription, details: nil))
-                return
-            }
-            
-            // No need for optional binding here since transaction is guaranteed to be non-nil
-            if transaction.type == .asynchronous {
-                // Open the STC Pay redirect URL in Safari View Controller
-                if let redirectURL = transaction.redirectURL {
-                    if let redirectURL = transaction.redirectURL {
-                    result1(redirectURL.absoluteString)
-                } else {
-                    result1(FlutterError(code: "2", message: "Redirect URL not found", details: nil))
-                }
-            } else if transaction.type == .synchronous {
-                // Synchronous transaction completed
-                result1("success")
-            } else {
-                // Handle unexpected transaction state
-                result1(FlutterError(code: "3", message: "Unknown transaction state", details: nil))
-            }
-        }
+                                guard let transaction = transaction else {
+                                    // Handle invalid transaction, check error
+                                     result1("error")
+//                                    result1(FlutterError.init(code: "1",message: "Error: " + self.transaction.debugDescription,details: nil))
+                                    return
+                                }
+                                self.transaction = transaction
+                                   if let redirectURL = self.transaction?.redirectURL {
+                                       result1(redirectURL.absoluteString)
+                                   } else {
+                                       result1("error")
+                                   }
     } catch let error as NSError {
-        // Handle parameter creation failure
-        result1(FlutterError(code: "4", message: error.localizedDescription, details: nil))
+       result1("error")
     }
 }
 }
