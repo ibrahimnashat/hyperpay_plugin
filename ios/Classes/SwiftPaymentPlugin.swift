@@ -90,6 +90,11 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
         }
 
     private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResult) {
+         if self.mode == "live" {
+            self.provider = OPPPaymentProvider(mode: OPPProviderMode.live)
+        }else{
+            self.provider = OPPPaymentProvider(mode: OPPProviderMode.test)
+        }
         // Configure the STC Pay payment parameters
         self.brand = "STC_PAY"
         let paymentParams = try OPPCardPaymentParams(checkoutID: checkoutId, paymentBrand: self.brand)
@@ -97,15 +102,37 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
         // Validate the payment parameters
         do {
             let transaction = try OPPTransaction(paymentParams: paymentParams)
-            
-            // Generate the STC Pay URL
+             self.provider.submitTransaction(transaction!) {
+                        (transaction, error) in
+                        guard let transaction = self.transaction else {
+                            // Handle invalid transaction, check error
+                            self.createalart(titletext: error as! String, msgtext: error as! String)
+                            return
+                        }
+                        if transaction.type == .asynchronous {
+                        // Generate the STC Pay URL
             if let paymentURL = transaction.redirectURL {
                 result1(paymentURL)
             } else {
-                result1("error")
+                result1(FlutterError(code: "1", message: "Method name is not found", details: ""))
             }
+
+                        }
+                        else if transaction.type == .synchronous {
+                            if let paymentURL = transaction.redirectURL {
+                result1(paymentURL)
+            } else {
+                result1(FlutterError(code: "1", message: "Method name is not found", details: ""))
+            }
+
+                        }
+                        else {
+                result1(FlutterError(code: "1", message: "Plesae try again", details: ""))
+                        }
+                    }
+            
         } catch let error {
-            result1("error")
+            result1(FlutterError(code: "1", message: "Method name is not found", details: ""))
         }
     }
 
