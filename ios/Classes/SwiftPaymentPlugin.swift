@@ -103,14 +103,15 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
 
         // Configure the verification options for STC Pay
         let verificationOption = OPPSTCPayVerificationOption(rawValue: "OTPEnabled") // Make sure this matches the enum raw value
-        verificationOption.isOTPEnabled = true // Enable OTP (One Time Password) verification
-        params.verificationOption = verificationOption
+        verificationOption.isOTPEnabled = true ;// Enable OTP (One Time Password) verification
+        params.verificationOption = verificationOption;
         params.isTokenizationEnabled=false;
-        params.shopperResultURL = self.shopperResultURL + "://result"
+        params.shopperResultURL = self.shopperResultURL + "://result";
         
         self.transaction = OPPTransaction(paymentParams: params)
 
-        self.provider.submitTransaction(self.transaction!) { (transaction, error) in
+        self.provider.submitTransaction(self.transaction!) { 
+            (transaction, error) in
                                 guard let transaction = transaction else {
                                     // Handle invalid transaction, check error
                                      result1("error")
