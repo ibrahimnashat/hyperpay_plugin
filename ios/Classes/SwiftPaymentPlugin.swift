@@ -102,11 +102,10 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
             if let paymentURL = transaction.redirectURL {
                 result1(paymentURL)
             } else {
-                let error = NSError(domain: "PaymentHandler", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to retrieve the STC Pay URL."])
-                result1(error)
+                result1("error")
             }
         } catch let error {
-            result1(error)
+            result1("error")
         }
     }
 
