@@ -89,39 +89,35 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
             }
         }
 
-        
-private func retrieveSTCPayURL(checkoutId: String, phoneNumber: String, result1: @escaping FlutterResult) {
-    if self.mode == "live" {
-        self.provider = OPPPaymentProvider(mode: OPPProviderMode.live)
-    } else {
-        self.provider = OPPPaymentProvider(mode: OPPProviderMode.test)
-    }
+   private func retrieveSTCPayURL(checkoutId: String, phoneNumber: String, result1: @escaping FlutterResult) {
+    let providerMode: OPPProviderMode = (self.mode == "live") ? .live : .test
+    self.provider = OPPPaymentProvider(mode: providerMode)
 
     do {
-        // Create STC Pay payment parameters
+        // Ensure to pass the correct raw value for the parameters
         let params = try OPPSTCPayPaymentParams(checkoutID: checkoutId, phoneNumber: phoneNumber)
-        
+
         // Configure the verification options for STC Pay
-        let verificationOption = OPPSTCPayVerificationOption()
+        let verificationOption = OPPSTCPayVerificationOption(rawValue: "OTPEnabled") // Make sure this matches the enum raw value
         verificationOption.isOTPEnabled = true // Enable OTP (One Time Password) verification
-        // Add other verification options if necessary
         params.verificationOption = verificationOption
         
         params.shopperResultURL = self.shopperResultURL + "://result"
         
         self.transaction = OPPTransaction(paymentParams: params)
 
-        // Submit the transaction
         self.provider.submitTransaction(self.transaction!) { (transaction, error) in
-            guard let transaction = transaction else {
+            if let error = error {
                 // Handle invalid transaction
-                result1(FlutterError(code: "1", message: error?.localizedDescription ?? "Transaction Failed", details: nil))
+                result1(FlutterError(code: "1", message: error.localizedDescription, details: nil))
                 return
             }
-
+            
+            // No need for optional binding here since transaction is guaranteed to be non-nil
             if transaction.type == .asynchronous {
                 // Open the STC Pay redirect URL in Safari View Controller
                 if let redirectURL = transaction.redirectURL {
+                    if let redirectURL = transaction.redirectURL {
                     result1(redirectURL.absoluteString)
                 } else {
                     result1(FlutterError(code: "2", message: "Redirect URL not found", details: nil))
@@ -139,6 +135,57 @@ private func retrieveSTCPayURL(checkoutId: String, phoneNumber: String, result1:
         result1(FlutterError(code: "4", message: error.localizedDescription, details: nil))
     }
 }
+
+        
+// private func retrieveSTCPayURL(checkoutId: String, phoneNumber: String, result1: @escaping FlutterResult) {
+//     if self.mode == "live" {
+//         self.provider = OPPPaymentProvider(mode: OPPProviderMode.live)
+//     } else {
+//         self.provider = OPPPaymentProvider(mode: OPPProviderMode.test)
+//     }
+
+//     do {
+//         // Create STC Pay payment parameters
+//         let params = try OPPSTCPayPaymentParams(checkoutID: checkoutId, phoneNumber: phoneNumber)
+        
+//         // Configure the verification options for STC Pay
+//         let verificationOption = OPPSTCPayVerificationOption()
+//         verificationOption.isOTPEnabled = true // Enable OTP (One Time Password) verification
+//         // Add other verification options if necessary
+//         params.verificationOption = verificationOption
+        
+//         params.shopperResultURL = self.shopperResultURL + "://result"
+        
+//         self.transaction = OPPTransaction(paymentParams: params)
+
+//         // Submit the transaction
+//         self.provider.submitTransaction(self.transaction!) { (transaction, error) in
+//             guard let transaction = transaction else {
+//                 // Handle invalid transaction
+//                 result1(FlutterError(code: "1", message: error?.localizedDescription ?? "Transaction Failed", details: nil))
+//                 return
+//             }
+
+//             if transaction.type == .asynchronous {
+//                 // Open the STC Pay redirect URL in Safari View Controller
+//                 if let redirectURL = transaction.redirectURL {
+//                     result1(redirectURL.absoluteString)
+//                 } else {
+//                     result1(FlutterError(code: "2", message: "Redirect URL not found", details: nil))
+//                 }
+//             } else if transaction.type == .synchronous {
+//                 // Synchronous transaction completed
+//                 result1("success")
+//             } else {
+//                 // Handle unexpected transaction state
+//                 result1(FlutterError(code: "3", message: "Unknown transaction state", details: nil))
+//             }
+//         }
+//     } catch let error as NSError {
+//         // Handle parameter creation failure
+//         result1(FlutterError(code: "4", message: error.localizedDescription, details: nil))
+//     }
+// }
 
 
 
