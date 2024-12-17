@@ -102,37 +102,31 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
         // Validate the payment parameters
         do {
             let transaction = try OPPTransaction(paymentParams: paymentParams)
-             self.provider.submitTransaction(transaction!) {
-                        (transaction, error) in
-                        guard let transaction = self.transaction else {
-                            // Handle invalid transaction, check error
-                            self.createalart(titletext: error as! String, msgtext: error as! String)
-                            return
-                        }
-                        if transaction.type == .asynchronous {
-                        // Generate the STC Pay URL
-            if let paymentURL = transaction.redirectURL {
-                result1(paymentURL)
-            } else {
-                result1(FlutterError(code: "1", message: "Method name is not found", details: ""))
-            }
-
-                        }
-                        else if transaction.type == .synchronous {
-                            if let paymentURL = transaction.redirectURL {
-                result1(paymentURL)
-            } else {
-                result1(FlutterError(code: "1", message: "Method name is not found", details: ""))
-            }
-
-                        }
-                        else {
-                result1(FlutterError(code: "1", message: "Plesae try again", details: ""))
-                        }
+            self.provider.submitTransaction(transaction) { (transaction, error) in
+                guard let transaction = transaction else {
+                    // Handle invalid transaction, check error
+                    self.createalart(titletext: error as! String, msgtext: error as! String)
+                    return
+                }
+                if transaction.type == .asynchronous {
+                    // Generate the STC Pay URL
+                    if let paymentURL = transaction.redirectURL {
+                        result1(paymentURL)
+                    } else {
+                        result1(FlutterError(code: "1", message: "Method name is not found", details: ""))
                     }
-            
+                } else if transaction.type == .synchronous {
+                    if let paymentURL = transaction.redirectURL {
+                        result1(paymentURL)
+                    } else {
+                        result1(FlutterError(code: "1", message: "Method name is not found", details: ""))
+                    }
+                } else {
+                    result1(FlutterError(code: "1", message: "Please try again", details: ""))
+                }
+            }
         } catch let error {
-            result1(FlutterError(code: "1", message: "Method name is not found", details: ""))
+            result1(FlutterError(code: "1", message: "Error creating transaction: \(error)", details: ""))
         }
     }
 
@@ -274,9 +268,8 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                     //set tokenization
                     params.shopperResultURL =  self.shopperResultURL+"://result"
                     self.transaction  = OPPTransaction(paymentParams: params)
-                    self.provider.submitTransaction(self.transaction!) {
-                        (transaction, error) in
-                        guard let transaction = self.transaction else {
+                    self.provider.submitTransaction(self.transaction!) { (transaction, error) in
+                        guard let transaction = transaction else {
                             // Handle invalid transaction, check error
                             self.createalart(titletext: error as! String, msgtext: error as! String)
                             return
