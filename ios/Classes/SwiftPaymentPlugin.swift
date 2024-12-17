@@ -135,6 +135,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
         result1(FlutterError(code: "4", message: error.localizedDescription, details: nil))
     }
 }
+}
 
         
 // private func retrieveSTCPayURL(checkoutId: String, phoneNumber: String, result1: @escaping FlutterResult) {
