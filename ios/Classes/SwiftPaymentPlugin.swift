@@ -102,8 +102,7 @@ private func retrieveSTCPayURL(checkoutId: String, phoneNumber: String, result1:
 
     do {
         // Configure the verification options for STC Pay
-        let verificationOption = OPPSTCPayVerificationOption(rawValue: "OTPEnabled")
-        verificationOption?.isOTPEnabled = true // Enable OTP verification
+        let verificationOption = OPPSTCPayVerificationOption.otp
 
         // Ensure to pass the correct parameters
         let params = try OPPSTCPayPaymentParams(checkoutID: checkoutId, verificationOption: verificationOption)
