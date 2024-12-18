@@ -91,43 +91,50 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
 
    
 
-   private func retrieveSTCPayURL(checkoutId: String, phoneNumber: String, result1: @escaping FlutterResult) {
+private func retrieveSTCPayURL(checkoutId: String, phoneNumber: String, result1: @escaping FlutterResult) {
 
-         if self.mode == "live" {
-             self.provider = OPPPaymentProvider(mode: OPPProviderMode.live)
-         }else{
-             self.provider = OPPPaymentProvider(mode: OPPProviderMode.test)
-         }
+    // Set the provider mode
+    if self.mode == "live" {
+        self.provider = OPPPaymentProvider(mode: .live)
+    } else {
+        self.provider = OPPPaymentProvider(mode: .test)
+    }
 
     do {
-
         // Configure the verification options for STC Pay
-        let verificationOption = OPPSTCPayVerificationOption(rawValue: "OTPEnabled") // Make sure this matches the enum raw value
-        verificationOption.isOTPEnabled = true ;// Enable OTP (One Time Password) verification
-        // Ensure to pass the correct raw value for the parameters
+        let verificationOption = OPPSTCPayVerificationOption(rawValue: "OTPEnabled")
+        verificationOption?.isOTPEnabled = true // Enable OTP verification
+
+        // Ensure to pass the correct parameters
         let params = try OPPSTCPayPaymentParams(checkoutID: checkoutId, verificationOption: verificationOption)
         params.phoneNumber = phoneNumber
+
+        // Create the transaction
         self.transaction = OPPTransaction(paymentParams: params)
 
-        self.provider.submitTransaction(self.transaction!) {
-            (transaction, error) in
-                                guard let transaction = transaction else {
-                                    // Handle invalid transaction, check error
-                                     result1("error")
-//                                    result1(FlutterError.init(code: "1",message: "Error: " + self.transaction.debugDescription,details: nil))
-                                    return
-                                }
-                                self.transaction = transaction
-                                   if let redirectURL = self.transaction?.redirectURL {
-                                       result1(redirectURL.absoluteString)
-                                   } else {
-                                       result1("error")
-                                   }
+        // Submit the transaction
+        self.provider.submitTransaction(self.transaction!) { (transaction, error) in
+            if let error = error {
+                result1(FlutterError(code: "1", message: "Transaction error: \(error.localizedDescription)", details: nil))
+                return
+            }
+
+            guard let transaction = transaction else {
+                result1(FlutterError(code: "2", message: "Transaction is nil", details: nil))
+                return
+            }
+
+            if let redirectURL = transaction.redirectURL {
+                result1(redirectURL.absoluteString)
+            } else {
+                result1(FlutterError(code: "3", message: "Redirect URL is nil", details: nil))
+            }
+        }
     } catch let error as NSError {
-       result1("error")
+        result1(FlutterError(code: "4", message: "Exception: \(error.localizedDescription)", details: nil))
     }
 }
-}
+
 
     private func openCheckoutUI(checkoutId: String,result1: @escaping FlutterResult) {
 
