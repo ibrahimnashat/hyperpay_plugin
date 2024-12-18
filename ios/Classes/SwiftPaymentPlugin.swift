@@ -78,7 +78,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                  self.setStorePaymentDetailsMode = (args!["EnabledTokenization"] as? String)!
                  self.openCustomUI(checkoutId: self.checkoutid, result1: result)
             }else if self.type  == "STC_CustomUI"{
-                  self.retrieveSTCPayURL(checkoutId: self.checkoutid, phoneNumber: (args!["phoneNumber"] as? String)!, result1: result)
+                  self.retrieveSTCPayURL(checkoutId: self.checkoutid, shopperResultURL: self.shopperResultURL, result1: result)
              }
             else {
                 result(FlutterError(code: "1", message: "Method name is not found", details: ""))
@@ -91,7 +91,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
 
    
 
-private func retrieveSTCPayURL(checkoutId: String, phoneNumber: String, result1: @escaping FlutterResult) {
+private func retrieveSTCPayURL(checkoutId: String, shopperResultURL: String, result1: @escaping FlutterResult) {
 
     // Set the provider mode
     if self.mode == "live" {
@@ -101,16 +101,9 @@ private func retrieveSTCPayURL(checkoutId: String, phoneNumber: String, result1:
     }
 
     do {
-        // Configure the verification options for STC Pay
-        let verificationOption = OPPSTCPayVerificationOption.otp
-
-        // Ensure to pass the correct parameters
-        let params = try OPPSTCPayPaymentParams(checkoutID: checkoutId, verificationOption: verificationOption)
-        params.phoneNumber = phoneNumber
-
-        // Create the transaction
-        self.transaction = OPPTransaction(paymentParams: params)
-
+      let params = try OPPPaymentParams(checkoutID: checkoutId,paymentBrand: "STC_PAY")    
+        params.shopperResultURL = shopperResultURL              
+        self.transaction  = OPPTransaction(paymentParams: params)
         // Submit the transaction
         self.provider.submitTransaction(self.transaction!) { (transaction, error) in
             if let error = error {
