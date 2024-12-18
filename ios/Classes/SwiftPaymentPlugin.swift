@@ -205,7 +205,6 @@ private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResu
         }
                 do {
                     let params = try OPPPaymentParams(checkoutID: checkoutId,paymentBrand: "STC_PAY") 
-                    params.isTokenizationEnabled=false;
                     //set tokenization
                     params.shopperResultURL =  self.shopperResultURL+"://result"
                     self.transaction  = OPPTransaction(paymentParams: params)
@@ -228,7 +227,6 @@ private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResu
                             // Handle the error
                             self.createalart(titletext: error as! String, msgtext: "Plesae try again")
                         }
-                       self.provider?.dismissCheckout(animated: true)
                     }
                     // Set shopper result URL
                     //    params.shopperResultURL = "com.companyname.appname.payments://result"
