@@ -78,7 +78,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                  self.setStorePaymentDetailsMode = (args!["EnabledTokenization"] as? String)!
                  self.openCustomUI(checkoutId: self.checkoutid, result1: result)
             }else if self.type  == "STC_CustomUI"{
-                  self.retrieveSTCPayURL(checkoutId: self.checkoutid, shopperResultURL: self.shopperResultURL, result1: result)
+                  self.retrieveSTCPayURL(checkoutId: self.checkoutid, result1: result)
              }
             else {
                 result(FlutterError(code: "1", message: "Method name is not found", details: ""))
@@ -91,54 +91,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
 
    
 
-private func retrieveSTCPayURL(checkoutId: String, shopperResultURL: String, result1: @escaping FlutterResult) {
 
-    // Set the provider mode
-    if self.mode == "live" {
-        self.provider = OPPPaymentProvider(mode: .live)
-    } else {
-        self.provider = OPPPaymentProvider(mode: .test)
-    }
-
-    do {
-      let params = try OPPPaymentParams(checkoutID: checkoutId,paymentBrand: "STC_PAY")    
-        params.shopperResultURL = shopperResultURL              
-        self.transaction  = OPPTransaction(paymentParams: params)
-        // Submit the transaction
-            self.transaction  = OPPTransaction(paymentParams: params)
-            self.provider.submitTransaction(self.transaction!) { (transaction, error) in
-                guard let transaction = self.transaction else {
-                    // Handle invalid transaction, check error
-                    self.createalart(titletext: error!.localizedDescription, msgtext: "")
-
-                    return
-                }
-                
-                if transaction.type == .asynchronous {
-                result1( self.transaction!.redirectURL!.absoluteString)
-                } else if transaction.type == .synchronous {
-                    // Send request to your server to obtain transaction status
-                    
-                    result1("success")
-
-                    
-                } else {
-                    result1("error")
-                }
-
-            self.provider?.dismissCheckout(animated: true)
-
-            }
-        } catch let error as NSError {
-            
-            self.createalart(titletext: error.localizedDescription, msgtext: "")
-
-       }
-        
-    } catch let error as NSError {
-        result1("error 4")
-    }
-}
 
 
     private func openCheckoutUI(checkoutId: String,result1: @escaping FlutterResult) {
@@ -243,6 +196,49 @@ private func retrieveSTCPayURL(checkoutId: String, shopperResultURL: String, res
                     }
 
 
+private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResult) {
+
+        if self.mode == "live" {
+            self.provider = OPPPaymentProvider(mode: OPPProviderMode.live)
+        }else{
+            self.provider = OPPPaymentProvider(mode: OPPProviderMode.test)
+        }
+                do {
+                    let params = try OPPPaymentParams(checkoutID: checkoutId,paymentBrand: "STC_PAY") 
+                    params.isTokenizationEnabled=false;
+                    //set tokenization
+                    params.shopperResultURL =  self.shopperResultURL+"://result"
+                    self.transaction  = OPPTransaction(paymentParams: params)
+                    self.provider.submitTransaction(self.transaction!) {
+                        (transaction, error) in
+                        guard let transaction = self.transaction else {
+                            // Handle invalid transaction, check error
+                            self.createalart(titletext: error as! String, msgtext: error as! String)
+                            return
+                        }
+                        if transaction.type == .asynchronous {
+                             result1( self.transaction!.redirectURL!.absoluteString)
+                           
+                        }
+                        else if transaction.type == .synchronous {
+                            // Send request to your server to obtain transaction status
+                            result1("success")
+                        }
+                        else {
+                            // Handle the error
+                            self.createalart(titletext: error as! String, msgtext: "Plesae try again")
+                        }
+                       self.provider?.dismissCheckout(animated: true)
+                    }
+                    // Set shopper result URL
+                    //    params.shopperResultURL = "com.companyname.appname.payments://result"
+                }
+                catch let error as NSError {
+                    // See error.code (OPPErrorCode) and error.localizedDescription to identify the reason of failure
+                    self.createalart(titletext: error.localizedDescription, msgtext: "")
+                }
+           
+    }
 
     private func openCustomUI(checkoutId: String,result1: @escaping FlutterResult) {
 
