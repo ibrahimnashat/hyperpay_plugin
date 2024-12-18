@@ -215,25 +215,11 @@ private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResu
                             self.createalart(titletext: error as! String, msgtext: error as! String)
                             return
                         }
-                        if transaction.type == .asynchronous {
-                            if let redirectURL = self.transaction!.redirectURL! {
-                                       result1(redirectURL.absoluteString)
-                                   } else {
-                                       result1("error")
-                                   }
-                           
-                        }
-                        else if transaction.type == .synchronous {
-                             if let redirectURL = self.transaction!.redirectURL! {
-                                       result1(redirectURL.absoluteString)
-                                   } else {
-                                       result1("error")
-                                   }
-                        }
-                        else {
-                            // Handle the error
-                            self.createalart(titletext: error as! String, msgtext: "Plesae try again")
-                        }
+                        if let redirectURL = self.transaction?.redirectURL {
+                            result1(redirectURL.absoluteString)
+                        } else {
+                            result1("error")
+                        } 
                     }
                     // Set shopper result URL
                     //    params.shopperResultURL = "com.companyname.appname.payments://result"
