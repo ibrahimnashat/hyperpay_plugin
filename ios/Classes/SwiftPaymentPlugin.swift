@@ -220,8 +220,7 @@ private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResu
                            
                         }
                         else if transaction.type == .synchronous {
-                            // Send request to your server to obtain transaction status
-                            result1("success")
+                             result1( self.transaction!.redirectURL!.absoluteString)
                         }
                         else {
                             // Handle the error
