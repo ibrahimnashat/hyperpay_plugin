@@ -216,7 +216,7 @@ private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResu
                             return
                         }
                         if transaction.type == .asynchronous {
-                            if let redirectURL = transaction?.redirectURL {
+                            if let redirectURL = transaction!.redirectURL {
                                        result1(redirectURL.absoluteString)
                                    } else {
                                        result1("error")
@@ -224,7 +224,7 @@ private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResu
                            
                         }
                         else if transaction.type == .synchronous {
-                             if let redirectURL = transaction?.redirectURL {
+                             if let redirectURL = transaction!.redirectURL {
                                        result1(redirectURL.absoluteString)
                                    } else {
                                        result1("error")
