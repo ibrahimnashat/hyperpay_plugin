@@ -77,7 +77,9 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                  self.cvv = (args!["cvv"] as? String)!
                  self.setStorePaymentDetailsMode = (args!["EnabledTokenization"] as? String)!
                  self.openCustomUI(checkoutId: self.checkoutid, result1: result)
-            }
+            }else if self.type  == "STC_CustomUI"{
+                  self.retrieveSTCPayURL(checkoutId: self.checkoutid, phoneNumber: (args!["phoneNumber"] as? String)!, result1: result)
+             }
             else {
                 result(FlutterError(code: "1", message: "Method name is not found", details: ""))
                     }
@@ -87,47 +89,45 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
             }
         }
 
-   // else if self.type  == "STC_CustomUI"{
-             //      self.retrieveSTCPayURL(checkoutId: self.checkoutid, phoneNumber: (args!["phoneNumber"] as? String)!, result1: result)
-             // }
+   
 
-//    private func retrieveSTCPayURL(checkoutId: String, phoneNumber: String, result1: @escaping FlutterResult) {
+   private func retrieveSTCPayURL(checkoutId: String, phoneNumber: String, result1: @escaping FlutterResult) {
 
-//          if self.mode == "live" {
-//              self.provider = OPPPaymentProvider(mode: OPPProviderMode.live)
-//          }else{
-//              self.provider = OPPPaymentProvider(mode: OPPProviderMode.test)
-//          }
+         if self.mode == "live" {
+             self.provider = OPPPaymentProvider(mode: OPPProviderMode.live)
+         }else{
+             self.provider = OPPPaymentProvider(mode: OPPProviderMode.test)
+         }
 
-//     do {
+    do {
 
-//         // Configure the verification options for STC Pay
-//         let verificationOption = OPPSTCPayVerificationOption(rawValue: "OTPEnabled") // Make sure this matches the enum raw value
-//         verificationOption.isOTPEnabled = true ;// Enable OTP (One Time Password) verification
-//         // Ensure to pass the correct raw value for the parameters
-//         let params = try OPPSTCPayPaymentParams(checkoutID: checkoutId, verificationOption: verificationOption)
-//         params.phoneNumber = phoneNumber
-//         self.transaction = OPPTransaction(paymentParams: params)
+        // Configure the verification options for STC Pay
+        let verificationOption = OPPSTCPayVerificationOption(rawValue: "OTPEnabled") // Make sure this matches the enum raw value
+        verificationOption.isOTPEnabled = true ;// Enable OTP (One Time Password) verification
+        // Ensure to pass the correct raw value for the parameters
+        let params = try OPPSTCPayPaymentParams(checkoutID: checkoutId, verificationOption: verificationOption)
+        params.phoneNumber = phoneNumber
+        self.transaction = OPPTransaction(paymentParams: params)
 
-//         self.provider.submitTransaction(self.transaction!) {
-//             (transaction, error) in
-//                                 guard let transaction = transaction else {
-//                                     // Handle invalid transaction, check error
-//                                      result1("error")
-// //                                    result1(FlutterError.init(code: "1",message: "Error: " + self.transaction.debugDescription,details: nil))
-//                                     return
-//                                 }
-//                                 self.transaction = transaction
-//                                    if let redirectURL = self.transaction?.redirectURL {
-//                                        result1(redirectURL.absoluteString)
-//                                    } else {
-//                                        result1("error")
-//                                    }
-//     } catch let error as NSError {
-//        result1("error")
-//     }
-// }
-// }
+        self.provider.submitTransaction(self.transaction!) {
+            (transaction, error) in
+                                guard let transaction = transaction else {
+                                    // Handle invalid transaction, check error
+                                     result1("error")
+//                                    result1(FlutterError.init(code: "1",message: "Error: " + self.transaction.debugDescription,details: nil))
+                                    return
+                                }
+                                self.transaction = transaction
+                                   if let redirectURL = self.transaction?.redirectURL {
+                                       result1(redirectURL.absoluteString)
+                                   } else {
+                                       result1("error")
+                                   }
+    } catch let error as NSError {
+       result1("error")
+    }
+}
+}
 
     private func openCheckoutUI(checkoutId: String,result1: @escaping FlutterResult) {
 
