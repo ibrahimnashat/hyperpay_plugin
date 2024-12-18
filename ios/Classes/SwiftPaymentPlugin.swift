@@ -105,21 +105,36 @@ private func retrieveSTCPayURL(checkoutId: String, shopperResultURL: String, res
         params.shopperResultURL = shopperResultURL              
         self.transaction  = OPPTransaction(paymentParams: params)
         // Submit the transaction
-        self.provider.submitTransaction(self.transaction!) { (transaction, error) in
-            if let error = error {
-                    result1("error 1")    
+            self.transaction  = OPPTransaction(paymentParams: params)
+            self.provider.submitTransaction(self.transaction!) { (transaction, error) in
+                guard let transaction = self.transaction else {
+                    // Handle invalid transaction, check error
+                    self.createalart(titletext: error!.localizedDescription, msgtext: "")
+
                     return
+                }
+                
+                if transaction.type == .asynchronous {
+                result1( self.transaction!.redirectURL!.absoluteString)
+                } else if transaction.type == .synchronous {
+                    // Send request to your server to obtain transaction status
+                    
+                    result1("success")
+
+                    
+                } else {
+                    result1("error")
+                }
+
+            self.provider?.dismissCheckout(animated: true)
+
             }
-            guard let transaction = transaction else {
-                 result1("error 2")
-                return
-            }
-            if let redirectURL = transaction.redirectURL {
-                result1(redirectURL.absoluteString)
-            } else {
-              result1("error 3")
-            }
-        }
+        } catch let error as NSError {
+            
+            self.createalart(titletext: error.localizedDescription, msgtext: "")
+
+       }
+        
     } catch let error as NSError {
         result1("error 4")
     }
