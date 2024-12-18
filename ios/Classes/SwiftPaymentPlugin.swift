@@ -77,7 +77,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                  self.cvv = (args!["cvv"] as? String)!
                  self.setStorePaymentDetailsMode = (args!["EnabledTokenization"] as? String)!
                  self.openCustomUI(checkoutId: self.checkoutid, result1: result)
-            }else if self.type  == "STC_CustomUI"{
+            }else if self.type  == "CustomUISTC"{
                   self.retrieveSTCPayURL(checkoutId: self.checkoutid, result1: result)
              }
             else {

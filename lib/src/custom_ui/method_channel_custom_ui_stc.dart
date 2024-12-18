@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/services.dart';
 import '../../flutter_hyperpay.dart';
 import '../helper/helper.dart';
@@ -26,6 +28,13 @@ Future<PaymentResultData> implementPaymentCustomUISTC({
           phoneNumber: phoneNumber,
           lang: lang),
     );
+    log(getCustomUiSTCModelCards(
+            checkoutId: checkoutId,
+            shopperResultUrl: shopperResultUrl,
+            paymentMode: paymentMode,
+            phoneNumber: phoneNumber,
+            lang: lang)
+        .toString());
     transactionStatus = '$result';
     return PaymentResultManger.getPaymentResult(transactionStatus);
   } on PlatformException catch (e) {
