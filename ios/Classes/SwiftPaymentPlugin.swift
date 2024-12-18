@@ -29,7 +29,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
     var themColorHex:String = "";
     var companyName:String = "";
     var safariVC: SFSafariViewController?
-    var transaction: OPPTransaction!
+    var transaction: OPPTransaction?
     var provider = OPPPaymentProvider(mode: OPPProviderMode.test)
     var checkoutProvider: OPPCheckoutProvider?
     var Presult:FlutterResult?
@@ -77,10 +77,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                  self.cvv = (args!["cvv"] as? String)!
                  self.setStorePaymentDetailsMode = (args!["EnabledTokenization"] as? String)!
                  self.openCustomUI(checkoutId: self.checkoutid, result1: result)
-            } 
-            // else if self.type  == "STC_CustomUI"{
-            //      self.retrieveSTCPayURL(checkoutId: self.checkoutid, phoneNumber: (args!["phoneNumber"] as? String)!, result1: result)
-            // }
+            }
             else {
                 result(FlutterError(code: "1", message: "Method name is not found", details: ""))
                     }
@@ -90,8 +87,12 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
             }
         }
 
+   // else if self.type  == "STC_CustomUI"{
+             //      self.retrieveSTCPayURL(checkoutId: self.checkoutid, phoneNumber: (args!["phoneNumber"] as? String)!, result1: result)
+             // }
+
 //    private func retrieveSTCPayURL(checkoutId: String, phoneNumber: String, result1: @escaping FlutterResult) {
-    
+
 //          if self.mode == "live" {
 //              self.provider = OPPPaymentProvider(mode: OPPProviderMode.live)
 //          }else{
@@ -108,7 +109,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
 //         params.phoneNumber = phoneNumber
 //         self.transaction = OPPTransaction(paymentParams: params)
 
-//         self.provider.submitTransaction(self.transaction!) { 
+//         self.provider.submitTransaction(self.transaction!) {
 //             (transaction, error) in
 //                                 guard let transaction = transaction else {
 //                                     // Handle invalid transaction, check error
@@ -127,9 +128,6 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
 //     }
 // }
 // }
-
-
-
 
     private func openCheckoutUI(checkoutId: String,result1: @escaping FlutterResult) {
 
@@ -268,8 +266,9 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                     //set tokenization
                     params.shopperResultURL =  self.shopperResultURL+"://result"
                     self.transaction  = OPPTransaction(paymentParams: params)
-                    self.provider.submitTransaction(self.transaction!) { (transaction, error) in
-                        guard let transaction = transaction else {
+                    self.provider.submitTransaction(self.transaction!) {
+                        (transaction, error) in
+                        guard let transaction = self.transaction else {
                             // Handle invalid transaction, check error
                             self.createalart(titletext: error as! String, msgtext: error as! String)
                             return

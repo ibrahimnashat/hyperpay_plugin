@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:hyperpay_plugin/model/custom_ui_stc.dart';
-
 import 'model/custom_ui.dart';
+import 'model/custom_ui_stc.dart';
 import 'model/ready_ui.dart';
 import 'model/stored_cards.dart';
 import 'src/custom_ui/method_channel_custom_ui.dart';
@@ -69,16 +68,15 @@ class FlutterHyperPay {
   /// This function is used to do payment using custom UI. It takes "CustomUI" as an argument,
   /// which consists of the brand name, checkout id, card number, holder name, month, year and cvv.
   /// The function returns a Future of PaymentResultData.
-  Future<PaymentResultData> customUISTC({
-    required CustomUISTC customUISTC,
-  }) async {
+  Future<PaymentResultData> customUISTC(
+      {required CustomUISTC customUISTC}) async {
     return await implementPaymentCustomUISTC(
       checkoutId: customUISTC.checkoutId,
-      phoneNumber: customUISTC.phoneNumber,
       shopperResultUrl: shopperResultUrl,
       channelName: channelName,
       paymentMode: paymentMode,
       lang: lang,
+      phoneNumber: customUISTC.phoneNumber,
     );
   }
 
