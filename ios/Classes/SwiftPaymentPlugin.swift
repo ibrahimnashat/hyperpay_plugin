@@ -115,23 +115,21 @@ private func retrieveSTCPayURL(checkoutId: String, phoneNumber: String, result1:
         // Submit the transaction
         self.provider.submitTransaction(self.transaction!) { (transaction, error) in
             if let error = error {
-                result1(FlutterError(code: "1", message: "Transaction error: \(error.localizedDescription)", details: nil))
-                return
+                    result1("error 1")    
+                    return
             }
-
             guard let transaction = transaction else {
-                result1(FlutterError(code: "2", message: "Transaction is nil", details: nil))
+                 result1("error 2")
                 return
             }
-
             if let redirectURL = transaction.redirectURL {
                 result1(redirectURL.absoluteString)
             } else {
-                result1(FlutterError(code: "3", message: "Redirect URL is nil", details: nil))
+              result1("error 3")
             }
         }
     } catch let error as NSError {
-        result1(FlutterError(code: "4", message: "Exception: \(error.localizedDescription)", details: nil))
+        result1("error 4")
     }
 }
 
