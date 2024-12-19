@@ -78,8 +78,8 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                  self.setStorePaymentDetailsMode = (args!["EnabledTokenization"] as? String)!
                  self.openCustomUI(checkoutId: self.checkoutid, result1: result)
             }else if self.type  == "CustomUISTC"{
-                //   self.retrieveSTCPayURL(checkoutId: self.checkoutid, result1: result)
-               self. onStcPay(args: args)
+                  self.retrieveSTCPayURL(checkoutId: self.checkoutid, result1: result)
+            //    self. onStcPay(args: args)
              }
             else {
                 result(FlutterError(code: "1", message: "Method name is not found", details: ""))
@@ -195,88 +195,8 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                         }
 
                     }
-   private func onStcPay(args:Dictionary<String, Any>) {
-        // self.phoneNumber = args["phoneNumber"] as! String
-        
-        do {
-
-            let params = try OPPSTCPayPaymentParams(
-                checkoutID: self.checkoutid,
-                verificationOption: OPPSTCPayVerificationOption.phone
-            )
-            
-            params.shopperResultURL =self.shopperResultURL+"://result"
-            
-            self.transaction  = OPPTransaction(paymentParams: params)
-            self.provider.submitTransaction(self.transaction!) {
-                (transaction, error) in
-                guard let transaction = self.transaction else {
-                    self.paymentResult!(
-                        FlutterError(
-                            code: "0.2",
-                            message: error?.localizedDescription,
-                            details: ""
-                        )
-                    )
-                    
-                    return
-                }
-                                
-                // The code 6000 is for when the user abort the process by pressing "Cancel".
-                if(error != nil) {
-                    let errorCode = (error! as NSError).code
-                    if(errorCode == 6000){
-                        UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
-                        self.paymentResult!("canceled")
-                    } else {
-                        self.paymentResult!(
-                            FlutterError(
-                                code: "0.2",
-                                message: error?.localizedDescription,
-                                details: ""
-                            )
-                        )
-                    }
-                } else {
-                    // Redirect from the 3DSecure page
-                    if (transaction.threeDS2Info != nil){
-                        UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
-                        self.paymentResult!("success")
-                    }
-                    // when redirect
-                    if transaction.type == .asynchronous {
-                        self.safariVC = SFSafariViewController(url: self.transaction!.redirectURL!)
-                        self.safariVC?.delegate = self;
-                        UIApplication.shared.windows.first?.rootViewController!.present(self.safariVC!, animated: true, completion: nil)
-                        
-                    } else if transaction.type == .synchronous {
-                        // Send request to your server to obtain transaction status.
-                        self.paymentResult!("synchronous")
-                    } else {
-                        // Handle the error
-                        self.paymentResult!(
-                            FlutterError(
-                                code: "0.2",
-                                message: error?.localizedDescription,
-                                details: ""
-                            )
-                        )
-                    }
-                }
-            }
-            
-        } catch {
-            self.paymentResult!(
-                FlutterError(
-                    code: "0.2",
-                    message: error.localizedDescription,
-                    details: ""
-                )
-            )
-        }
-    }
-
-private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResult) {
+   
+private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResult,args: Dictionary<String,Any>) {
 
         if self.mode == "live" {
             self.provider = OPPPaymentProvider(mode: OPPProviderMode.live)
@@ -284,7 +204,15 @@ private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResu
             self.provider = OPPPaymentProvider(mode: OPPProviderMode.test)
         }
                 do {
-                    let params = try OPPPaymentParams(checkoutID: checkoutId,paymentBrand: "STC_PAY") 
+                    let option = try getArgument(args, "verificationOption") as String
+                    let mobile = getNullableArgument(args, "mobile") as String?
+                    let verificationOption = FlutterSTCPayVerificationOption(rawValue: option)
+                    if verificationOption == nil {
+                        try throwInvalid("verificationOption", option)
+                    }
+                    let params = try OPPSTCPayPaymentParams(checkoutID: checkoutId, verificationOption: verificationOption!.value)
+                    params.phoneNumber = mobile
+            
                     //set tokenization
                     params.shopperResultURL =  self.shopperResultURL+"://result"
                     self.transaction  = OPPTransaction(paymentParams: params)
@@ -455,6 +383,38 @@ private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResu
          checkoutSettings.theme.cellHighlightedBackgroundColor = UIColor(hexString:hexColorString);
          checkoutSettings.theme.accentColor = UIColor(hexString:hexColorString);
      }
+
+        func getArgument<T>(_ args: Dictionary<String, Any>?, _ name: String) throws -> T  {
+        if args == nil {
+            throw SwiftFlutterOppwaException.init(errorCode: "invalid_arguments", message: "expected arguments but found null")
+        }
+        let contain = args!.keys.contains(name)
+        if contain {
+            let result = args![name] as? T
+            if(result == nil){
+                throw SwiftFlutterOppwaException.init(errorCode: "invalid_arguments", message: name + " can not be null")
+            }
+            return result!
+        } else {
+            throw SwiftFlutterOppwaException.init(errorCode: "invalid_arguments", message: " argument with the name of '\(name)' is required")
+        }
+    }
+    func getNullableArgument<T>(_ args: Dictionary<String, Any>?, _ name: String) -> T?  {
+        if args!.keys.contains(name) {
+            let result = args![name] as? T
+            return result
+        }
+        return nil
+    }
+    func throwInvalid( _ name: String,  _ value: Any) throws {
+        throw SwiftFlutterOppwaException.init(errorCode: "invalid_arguments", message: "there is no \(name) with the value of \(value)")
+    }
+    func checkUrlInScheme() throws {
+        let scheme = Bundle.main.bundleIdentifier! + ".payments"
+        if !UIApplication.shared.canOpenURL(URL.init(string: scheme + "://result")!) {
+            throw SwiftFlutterOppwaException.init(errorCode: "not_ready", message: "Please update Info.plist and add '\(scheme)' to CFBundleURLSchemes")
+        }
+    }
 }
 
 extension UIColor {

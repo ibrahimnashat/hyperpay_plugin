@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:flutter/services.dart';
 import '../../flutter_hyperpay.dart';
+import '../../model/custom_ui_stc.dart';
 import '../helper/helper.dart';
 
 /// implementPaymentCustomUISTC is a method used to make online payments.
@@ -10,11 +9,10 @@ import '../helper/helper.dart';
 /// It returns a PaymentResultData object with the paymentResult and errorString.
 Future<PaymentResultData> implementPaymentCustomUISTC({
   required PaymentMode paymentMode,
-  required String checkoutId,
   required String channelName,
   required String shopperResultUrl,
-  required String phoneNumber,
   required String lang,
+  required STCTransaction transaction,
 }) async {
   String transactionStatus;
   var platform = MethodChannel(channelName);
@@ -22,19 +20,11 @@ Future<PaymentResultData> implementPaymentCustomUISTC({
     final String? result = await platform.invokeMethod(
       PaymentConst.methodCall,
       getCustomUiSTCModelCards(
-          checkoutId: checkoutId,
           shopperResultUrl: shopperResultUrl,
           paymentMode: paymentMode,
-          phoneNumber: phoneNumber,
+          transaction: transaction,
           lang: lang),
     );
-    log(getCustomUiSTCModelCards(
-            checkoutId: checkoutId,
-            shopperResultUrl: shopperResultUrl,
-            paymentMode: paymentMode,
-            phoneNumber: phoneNumber,
-            lang: lang)
-        .toString());
     transactionStatus = '$result';
     return PaymentResultManger.getPaymentResult(transactionStatus);
   } on PlatformException catch (e) {
@@ -50,17 +40,14 @@ Future<PaymentResultData> implementPaymentCustomUISTC({
 /// mode, checkout id, phone number, language, and shopper result URL.
 Map<String, String?> getCustomUiSTCModelCards({
   required PaymentMode paymentMode,
-  required String phoneNumber,
-  required String checkoutId,
   required String lang,
   required String shopperResultUrl,
+  required STCTransaction transaction,
 }) {
   return {
-    "type": PaymentConst.customUiSTC,
     "mode": paymentMode.toString().split('.').last,
-    "checkoutid": checkoutId,
-    "phone_number": phoneNumber,
     "lang": lang,
     "ShopperResultUrl": shopperResultUrl,
+    ...transaction.toMap(),
   };
 }

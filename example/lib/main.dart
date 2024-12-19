@@ -69,14 +69,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   String? checkoutId = await getCheckOut();
                   if (checkoutId != null) {
                     /// Brands Names [ VISA , MASTER , MADA , STC_PAY , APPLEPAY]
-                    payRequestNowReadyUI(brand: [
-                      "VISA",
-                      "MASTER",
-                      "MADA",
-                      "PAYPAL",
-                      "STC_PAY",
-                      "APPLEPAY"
-                    ].first, checkoutId: checkoutId);
+                    payRequestNowReadyUI(
+                        brand: [
+                          "VISA",
+                          "MASTER",
+                          "MADA",
+                          "PAYPAL",
+                          "STC_PAY",
+                          "APPLEPAY"
+                        ].first,
+                        checkoutId: checkoutId);
                   }
                 },
                 child: const Text(
@@ -199,8 +201,11 @@ class _MyHomePageState extends State<MyHomePage> {
     PaymentResultData paymentResultData;
 
     paymentResultData = await flutterHyperPay.customUISTC(
-      customUISTC:
-          CustomUISTC(checkoutId: checkoutId, phoneNumber: phoneNumber),
+      transaction: STCTransaction(
+        checkoutId: checkoutId,
+        mobile: phoneNumber,
+        verificationOption: STCPayVerificationOption.mobilePhone,
+      ),
     );
 
     if (paymentResultData.paymentResult == PaymentResult.success ||
