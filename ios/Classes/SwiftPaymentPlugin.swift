@@ -78,7 +78,8 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                  self.setStorePaymentDetailsMode = (args!["EnabledTokenization"] as? String)!
                  self.openCustomUI(checkoutId: self.checkoutid, result1: result)
             }else if self.type  == "CustomUISTC"{
-                  self.retrieveSTCPayURL(checkoutId: self.checkoutid, result1: result)
+                //   self.retrieveSTCPayURL(checkoutId: self.checkoutid, result1: result)
+               self. onStcPay(args: args)
              }
             else {
                 result(FlutterError(code: "1", message: "Method name is not found", details: ""))
@@ -194,7 +195,86 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                         }
 
                     }
+   private func onStcPay(args:Dictionary<String, Any>) {
+        // self.phoneNumber = args["phoneNumber"] as! String
+        
+        do {
 
+            let params = try OPPSTCPayPaymentParams(
+                checkoutID: self.checkoutid,
+                verificationOption: OPPSTCPayVerificationOption.phone
+            )
+            
+            params.shopperResultURL = Bundle.main.bundleIdentifier! + shopperResultURLSuffix
+            
+            self.transaction  = OPPTransaction(paymentParams: params)
+            self.provider.submitTransaction(self.transaction!) {
+                (transaction, error) in
+                guard let transaction = self.transaction else {
+                    self.paymentResult!(
+                        FlutterError(
+                            code: "0.2",
+                            message: error?.localizedDescription,
+                            details: ""
+                        )
+                    )
+                    
+                    return
+                }
+                                
+                // The code 6000 is for when the user abort the process by pressing "Cancel".
+                if(error != nil) {
+                    let errorCode = (error! as NSError).code
+                    if(errorCode == 6000){
+                        UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
+                        self.paymentResult!("canceled")
+                    } else {
+                        self.paymentResult!(
+                            FlutterError(
+                                code: "0.2",
+                                message: error?.localizedDescription,
+                                details: ""
+                            )
+                        )
+                    }
+                } else {
+                    // Redirect from the 3DSecure page
+                    if (transaction.threeDS2Info != nil){
+                        UIApplication.shared.delegate?.window??.rootViewController?.dismiss(animated: true)
+                        self.paymentResult!("success")
+                    }
+                    // when redirect
+                    if transaction.type == .asynchronous {
+                        self.safariVC = SFSafariViewController(url: self.transaction!.redirectURL!)
+                        self.safariVC?.delegate = self;
+                        UIApplication.shared.windows.first?.rootViewController!.present(self.safariVC!, animated: true, completion: nil)
+                        
+                    } else if transaction.type == .synchronous {
+                        // Send request to your server to obtain transaction status.
+                        self.paymentResult!("synchronous")
+                    } else {
+                        // Handle the error
+                        self.paymentResult!(
+                            FlutterError(
+                                code: "0.2",
+                                message: error?.localizedDescription,
+                                details: ""
+                            )
+                        )
+                    }
+                }
+            }
+            
+        } catch {
+            self.paymentResult!(
+                FlutterError(
+                    code: "0.2",
+                    message: error.localizedDescription,
+                    details: ""
+                )
+            )
+        }
+    }
 
 private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResult) {
 
