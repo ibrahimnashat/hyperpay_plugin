@@ -14,13 +14,13 @@ class PaymentResultManger {
     }
     if (paymentResult == PaymentConst.success) {
       return PaymentResultData(
-          errorString: '', paymentResult: PaymentResult.success);
+          errorString: '$paymentResult', paymentResult: PaymentResult.success);
     } else if (paymentResult == PaymentConst.sync) {
       return PaymentResultData(
-          errorString: '', paymentResult: PaymentResult.sync);
+          errorString: '$paymentResult', paymentResult: PaymentResult.sync);
     } else {
       return PaymentResultData(
-          errorString: '', paymentResult: PaymentResult.noResult);
+          errorString: '$paymentResult', paymentResult: PaymentResult.noResult);
     }
   }
 }

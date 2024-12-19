@@ -205,7 +205,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                 verificationOption: OPPSTCPayVerificationOption.phone
             )
             
-            params.shopperResultURL = Bundle.main.bundleIdentifier! + shopperResultURLSuffix
+            params.shopperResultURL =self.shopperResultURL+"://result"
             
             self.transaction  = OPPTransaction(paymentParams: params)
             self.provider.submitTransaction(self.transaction!) {
