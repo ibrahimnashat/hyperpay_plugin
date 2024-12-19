@@ -1,36 +1,19 @@
-enum STCPayVerificationOption {
-  /// Mobile phone number option.
-  mobilePhone,
+import '../flutter_hyperpay.dart';
 
-  /// QR-Code option.
-  qrCode,
-}
+/// Class CustomUISTC is used to store the payment type,
+/// checkout ID, and phone number for custom UI payment.
+class CustomUISTC {
+  /// initializes a variable named paymentType with the value PaymentConst.customUi.
+  String paymentType = PaymentConst.customUi;
 
-class STCTransaction {
-  /// The mobile phone number.
-  final String? mobile;
-  final String checkoutId;
+  /// declares a string variable named checkoutId without assigning it an initial value.
+  String checkoutId;
 
-  /// The verification option to proceed STC Pay transaction
-  final STCPayVerificationOption verificationOption;
+  /// The phone number for STC (Saudi Telecom Company) can vary depending on the specific region or service you are looking for
+  String phoneNumber;
 
-  /// [checkoutId] The checkout id of the transaction. Must not be empty.
-  ///
-  /// [verificationOption] The card number of the transaction.
-  ///
-  /// [mobile] The mobile phone number.
-  STCTransaction({
+  CustomUISTC({
     required this.checkoutId,
-    required this.verificationOption,
-    this.mobile,
+    required this.phoneNumber,
   });
-
-  Map<String, dynamic> toMap() {
-    return {
-      "type": "CustomUISTC",
-      "checkoutId": checkoutId,
-      "mobile": mobile,
-      "verificationOption": verificationOption.name,
-    }..removeWhere((key, value) => value == null);
-  }
 }

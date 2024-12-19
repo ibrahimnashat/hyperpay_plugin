@@ -201,11 +201,8 @@ class _MyHomePageState extends State<MyHomePage> {
     PaymentResultData paymentResultData;
 
     paymentResultData = await flutterHyperPay.customUISTC(
-      transaction: STCTransaction(
-        checkoutId: checkoutId,
-        mobile: phoneNumber,
-        verificationOption: STCPayVerificationOption.mobilePhone,
-      ),
+      customUISTC:
+          CustomUISTC(checkoutId: checkoutId, phoneNumber: phoneNumber),
     );
 
     if (paymentResultData.paymentResult == PaymentResult.success ||

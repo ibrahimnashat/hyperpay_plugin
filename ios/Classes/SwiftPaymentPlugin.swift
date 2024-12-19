@@ -79,7 +79,6 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                  self.openCustomUI(checkoutId: self.checkoutid, result1: result)
             }else if self.type  == "CustomUISTC"{
                   self.retrieveSTCPayURL(checkoutId: self.checkoutid, result1: result)
-            //    self. onStcPay(args: args)
              }
             else {
                 result(FlutterError(code: "1", message: "Method name is not found", details: ""))
@@ -195,8 +194,9 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                         }
 
                     }
-   
-private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResult,args: Dictionary<String,Any>) {
+
+
+private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResult) {
 
         if self.mode == "live" {
             self.provider = OPPPaymentProvider(mode: OPPProviderMode.live)
@@ -204,15 +204,7 @@ private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResu
             self.provider = OPPPaymentProvider(mode: OPPProviderMode.test)
         }
                 do {
-                    let option = try getArgument(args, "verificationOption") as String
-                    let mobile = getNullableArgument(args, "mobile") as String?
-                    let verificationOption = FlutterSTCPayVerificationOption(rawValue: option)
-                    if verificationOption == nil {
-                        try throwInvalid("verificationOption", option)
-                    }
-                    let params = try OPPSTCPayPaymentParams(checkoutID: checkoutId, verificationOption: verificationOption!.value)
-                    params.phoneNumber = mobile
-            
+                    let params = try OPPPaymentParams(checkoutID: checkoutId,paymentBrand: "STC_PAY") 
                     //set tokenization
                     params.shopperResultURL =  self.shopperResultURL+"://result"
                     self.transaction  = OPPTransaction(paymentParams: params)
@@ -383,38 +375,6 @@ private func retrieveSTCPayURL(checkoutId: String,result1: @escaping FlutterResu
          checkoutSettings.theme.cellHighlightedBackgroundColor = UIColor(hexString:hexColorString);
          checkoutSettings.theme.accentColor = UIColor(hexString:hexColorString);
      }
-
-        func getArgument<T>(_ args: Dictionary<String, Any>?, _ name: String) throws -> T  {
-        if args == nil {
-            throw SwiftFlutterOppwaException.init(errorCode: "invalid_arguments", message: "expected arguments but found null")
-        }
-        let contain = args!.keys.contains(name)
-        if contain {
-            let result = args![name] as? T
-            if(result == nil){
-                throw SwiftFlutterOppwaException.init(errorCode: "invalid_arguments", message: name + " can not be null")
-            }
-            return result!
-        } else {
-            throw SwiftFlutterOppwaException.init(errorCode: "invalid_arguments", message: " argument with the name of '\(name)' is required")
-        }
-    }
-    func getNullableArgument<T>(_ args: Dictionary<String, Any>?, _ name: String) -> T?  {
-        if args!.keys.contains(name) {
-            let result = args![name] as? T
-            return result
-        }
-        return nil
-    }
-    func throwInvalid( _ name: String,  _ value: Any) throws {
-        throw SwiftFlutterOppwaException.init(errorCode: "invalid_arguments", message: "there is no \(name) with the value of \(value)")
-    }
-    func checkUrlInScheme() throws {
-        let scheme = Bundle.main.bundleIdentifier! + ".payments"
-        if !UIApplication.shared.canOpenURL(URL.init(string: scheme + "://result")!) {
-            throw SwiftFlutterOppwaException.init(errorCode: "not_ready", message: "Please update Info.plist and add '\(scheme)' to CFBundleURLSchemes")
-        }
-    }
 }
 
 extension UIColor {

@@ -69,13 +69,14 @@ class FlutterHyperPay {
   /// which consists of the brand name, checkout id, card number, holder name, month, year and cvv.
   /// The function returns a Future of PaymentResultData.
   Future<PaymentResultData> customUISTC(
-      {required STCTransaction transaction}) async {
+      {required CustomUISTC customUISTC}) async {
     return await implementPaymentCustomUISTC(
+      checkoutId: customUISTC.checkoutId,
       shopperResultUrl: shopperResultUrl,
       channelName: channelName,
       paymentMode: paymentMode,
       lang: lang,
-      transaction: transaction,
+      phoneNumber: customUISTC.phoneNumber,
     );
   }
 
